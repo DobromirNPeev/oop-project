@@ -1,5 +1,6 @@
 #pragma once
 #include "MyString.h"
+
 class User
 {
 private:
@@ -8,6 +9,8 @@ private:
 	MyString password;
 	unsigned id;
 	unsigned points;
+	bool upVoted = false;
+	bool downVoted = false;
 public:
 	User();
 	User(const char* firstName, const char* lastnName, const char* password);

@@ -3,6 +3,7 @@
 #include "Topic.h"
 #include "Post.h"
 #include "User.h"
+#include "Comment.h"
 
 
 template<class T>

@@ -199,6 +199,7 @@ void Vector<T>::copyFrom(const Vector<T>& other) {
 	capacity = other.capacity;
 	data = new T[capacity];
 
+
 	for (size_t i = 0; i < other.size; i++) {
 		data[i] = other.data[i];
 	}
@@ -210,8 +211,9 @@ void Vector<T>::free() {
 	data = nullptr;
 	size = capacity = 0;
 }
-
-template class Vector<User>; // explicit instantiation of the class for int type
-template class Vector<Topic>; // explicit instantiation of the class for int type
-template class Vector<Post>; // explicit instantiation of the class for int type
+ // explicit instantiation of the class for int type
 //template class Vector<MyString>; // explicit instantiation of the class for int type
+template class Vector<User>;
+template class Vector<Topic>;
+template class Vector<Post>;
+template class Vector<Comment>;

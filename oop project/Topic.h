@@ -1,12 +1,14 @@
 #pragma once
 #include "User.h"
-#include "MyString.h"
+#include "Post.h"
+
+template <class T> class Vector;
 
 class Topic
 {
 	MyString heading;
 	User creator;
-	//Vector<Post> posts
+	Vector<Post>* posts;
 	MyString description;
 	unsigned id;
 public:
@@ -18,5 +20,6 @@ public:
 	unsigned getID();
 	void setID(unsigned id);
 	friend std::istream& operator>>(std::istream& is, Topic& topic);
+	Vector<Post>* getPosts() const;
 };
 std::istream& operator>>(std::istream& is, Topic& topic);

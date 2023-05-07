@@ -14,5 +14,11 @@ const MyString& User::getPassword() const {
 	return password;
 }
 std::istream& operator>>(std::istream& is,User& user) {
-	return is >> user.firstName >> user.lastName >> user.password;
+	std::cout << "Enter First Name:";
+	is >> user.firstName;
+	std::cout << "Enter Last Name:";
+	is >> user.lastName;
+	std::cout << "Enter password:";
+	is >> user.password;
+	return is;
 }

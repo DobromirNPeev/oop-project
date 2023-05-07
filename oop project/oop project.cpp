@@ -4,6 +4,13 @@
 int main()
 {
     SocialNetwork s;
+    s.signup();
+    s.login("Dobromir","1234");
+    s.create();
+    s.create();
+    s.create();
+
+    //s.list();
     //std::cout<<s.signup()<<std::endl;
     //std::cout<<s.signup()<<std::endl;
     int a = 4;

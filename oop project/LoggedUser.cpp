@@ -11,7 +11,3 @@ template <class T>
 T* UniquePtr<T>::get() {
     return currentUser_;
 }
-
-template class UniquePtr<User>; // explicit instantiation of the class for int type
-template class UniquePtr<Topic>;
-template class UniquePtr<Post>;

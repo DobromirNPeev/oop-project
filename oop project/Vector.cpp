@@ -217,3 +217,4 @@ template class Vector<User>;
 template class Vector<Topic>;
 template class Vector<Post>;
 template class Vector<Comment>;
+template class Vector<MyString>;

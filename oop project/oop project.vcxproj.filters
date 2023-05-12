@@ -27,22 +27,13 @@
     <ClCompile Include="SocialNetwork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Vector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Topic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LoggedUser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Post.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Comment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Reply.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,19 +47,19 @@
     <ClInclude Include="SocialNetwork.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Topic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LoggedUser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Post.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Comment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UniquePtr.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

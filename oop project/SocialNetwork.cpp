@@ -1,7 +1,7 @@
 #include "SocialNetwork.h"
 MyString readStringFromFile(std::ifstream& file) {
-	size_t stringLength;
-	file.read((char*)&stringLength, sizeof(size_t));
+	int stringLength;
+	file.read((char*)&stringLength, sizeof(int));
 	char* str = new char[stringLength + 1];
 	file.read(str, stringLength);
 	str[stringLength] = '\0';
@@ -67,7 +67,7 @@ Topic SocialNetwork::readTopicFromBinaryFile(std::ifstream& ifs)
 	ifs.read((char*)&postsCount, sizeof(postsCount));
 	for (size_t i = 0; i < postsCount; i++)
 	{
-		topic.posts[i] = readPostFromBinaryFile(ifs);
+		topic.posts.pushBack(readPostFromBinaryFile(ifs));
 	}
 	topic.description = readStringFromFile(ifs);
 	static unsigned topicId;
@@ -96,8 +96,8 @@ User SocialNetwork::readUserFromBinaryFile(std::ifstream& ifs)
 	return user;
 }
 void writeStringToFile(std::ofstream& file, const char* str) {
-	size_t stringLength = strlen(str);
-	file.write((const char*)&stringLength, sizeof(size_t));
+	int stringLength = strlen(str);
+	file.write((const char*)&stringLength, sizeof(int));
 	file.write(str, stringLength);
 }
 void SocialNetwork::writeCommentToFile(std::ofstream& ofs, const Comment& comment) {
@@ -211,10 +211,20 @@ int SocialNetwork::findTopic(unsigned n) {
 	}
 	return -1;
 }
-void SocialNetwork::whoiami() {
+void SocialNetwork::whoami() {
+	if (loggedUser.get() == nullptr) {
+		std::cout << "No logged user" << std::endl;
+		return;
+	}
 	std::cout << loggedUser.get();
 }
-void SocialNetwork::about(unsigned id) {
+void SocialNetwork::about() {
+	static unsigned id;
+	std::cin >> id;
+	if (findTopic(id) == -1) {
+		std::cout << "Invalid id" << std::endl;
+		return;
+	}
 	std::cout << topics[findTopic(id)];
 }
 bool SocialNetwork::login() {
@@ -267,24 +277,38 @@ bool searchInText(const char* text, const char* pattern)
 //	}
 //}
 void SocialNetwork::open(const MyString& topicName) {
+	if (loggedUser.get() == nullptr) {
+		std::cout << "Cannot acces topic, no logged user" << std::endl;
+		return;
+	}
 	for (size_t i = 0; i < topics.getSize(); i++)
 	{
 		if (searchInText(topics[i].getHeading(), topicName.c_str())) {
-			std::cout << "Welcome to" << topics[i].heading;
-				openedTopic.set(&topics[i]);
+			std::cout << "Welcome to " << topics[i].heading << std::endl;
+			openedTopic.set(&topics[i]);
+			return;
 		}
 	}
 }
 void SocialNetwork::open(unsigned id) {
+	if (loggedUser.get() == nullptr) {
+		std::cout << "Cannot acces topic, no logged user" << std::endl;
+		return;
+	}
 	for (size_t i = 0; i < topics.getSize(); i++)
 	{
 		if (topics[i].getID() == id) {
-			std::cout << "Welcome to" << topics[i].heading;
+			std::cout << "Welcome to " << topics[i].heading<<std::endl;
 			openedTopic.set(&topics[i]);
+			return;
 		}
 	}
 }
 void SocialNetwork::list() {
+	if (loggedUser.get() == nullptr || openedTopic.get()==nullptr) {
+		std::cout << "Cannot acces topics" << std::endl;
+		return;
+	}
 	static unsigned numberOfPosts = openedTopic.get()->getPosts().getSize();
 	for (size_t i = 0; i < numberOfPosts; i++)
 	{
@@ -292,31 +316,61 @@ void SocialNetwork::list() {
 	}
 }
 void SocialNetwork::p_open(const MyString& postName) {
+	if (loggedUser.get() == nullptr || openedTopic.get() == nullptr) {
+		std::cout << "Cannot acces post" << std::endl;
+		return;
+	}
 	int size = openedTopic.get()->getPosts().getSize();
-	static Vector<Post> posts = openedTopic.get()->getPosts();
+	//static Vector<Post> posts = openedTopic.get()->getPosts();
 	for (size_t i = 0; i < size; i++)
 	{
-		if (searchInText(posts[i].getHeading().c_str(), postName.c_str())) {
-			openedPost.set(&posts[i]);
+		if (searchInText(openedTopic.get()->getPosts()[i].getHeading().c_str(), postName.c_str())) {
+			std::cout << "Q: " << openedTopic.get()->getPosts()[i]<<std::endl;
+			openedPost.set(&openedTopic.get()->getPosts()[i]);
 		}
 	}
 }
-void SocialNetwork::comment(const MyString& description) {
+void SocialNetwork::comment() {
+	if (loggedUser.get() == nullptr || openedTopic.get()==nullptr || openedPost.get()==nullptr) {
+		std::cout << "Cannot comment" << std::endl;
+		return;
+	}
+	static MyString description;
+	std::cout << "Say something: ";
+	std::cin >> description;
 	loggedUser.get()->points++;
 	openedPost.get()->getComments().pushBack(Comment(*(loggedUser.get()), description));
 }
+void SocialNetwork::comments() {
+	if (loggedUser.get() == nullptr || openedTopic.get() == nullptr || openedPost.get() == nullptr) {
+		std::cout << "Cannot see comments" << std::endl;
+		return;
+	}
+	for (size_t i = 0; i < openedPost.get()->comments.getSize(); i++)
+	{
+		std::cout << openedPost.get()->comments[i].description << "{ " << openedPost.get()->comments[i].id << " }";
+	}
+}
 void SocialNetwork::p_open(unsigned id) {
+	if (loggedUser.get() == nullptr || openedTopic.get() == nullptr) {
+		std::cout << "Cannot acces post" << std::endl;
+		return;
+	}
 	int size = openedTopic.get()->getPosts().getSize();
-	static Vector<Post> posts = openedTopic.get()->getPosts();
+	//static Vector<Post> posts = openedTopic.get()->getPosts();
 	for (size_t i = 0; i < size; i++)
 	{
-		if (posts[i].getID() == id) {
-			openedPost.set(&posts[i]);
+		if (openedTopic.get()->getPosts()[i].getID() == id) {
+			openedPost.set(&openedTopic.get()->getPosts()[i]);
 		}
 	}
 }
 void SocialNetwork::reply(unsigned id) {
-	MyString answer;
+	if (loggedUser.get() == nullptr || openedTopic.get() == nullptr || openedPost.get() == nullptr) {
+		std::cout << "Cannot reply" << std::endl;
+		return;
+	}
+	static MyString answer;
 	std::cin >> answer;
 	//static Vector<Comment> comments = openedPost.get()->getComments();
 	for (size_t i = 0; i < openedPost.get()->getComments().getSize(); i++)
@@ -326,13 +380,41 @@ void SocialNetwork::reply(unsigned id) {
 		}
 	}
 }
-void SocialNetwork::post(const MyString& title, const MyString& description){
-	openedTopic.get()->getPosts().pushBack(Post(title, description));
+void SocialNetwork::post(){
+	if (openedTopic.get() == nullptr || loggedUser.get()==nullptr) {
+		std::cout << "Cannot post" << std::endl;
+		return;
+	}
+	Post newPost;
+	std::cin >> newPost;
+	openedTopic.get()->posts.pushBack(newPost);
 }
+unsigned int convertFromChar(char ch)
+{
+	if (ch < '0' || ch > '9')
+		return 10;
+	return ch - '0';
+}
+
+unsigned int fromString(const char* str)
+{
+	unsigned int result = 0;
+	while (*str != '\0')
+	{
+		int currentDigit = convertFromChar(*str);
+		if (currentDigit == 10) {
+			return -1;
+		}
+		(result *= 10) += currentDigit;
+		str++;
+	}
+	return result;
+}
+
 void SocialNetwork::run(){
 	MyString command;
-	while (command != "exit") {
-		std::cout << "Command: ";
+	while (true) {
+		std::cout << ">";
 		std::cin >> command;
 
 		if (command == "signup") {
@@ -345,64 +427,157 @@ void SocialNetwork::run(){
 			logout();
 		}
 		else if (command == "search") {
-			search();
+			static MyString topicName;
+			std::cout << "Enter keyword: ";
+			std::cin >> topicName;
+			search(topicName);
 		}
 		else if (command == "create") {
 			create();
 		}
 		else if (command == "open") {
+			static MyString topicName;
+			std::cout << "Enter id or topic name: ";
+			std::cin >> topicName;
+			int id = fromString(topicName.c_str());
+			if (id == -1) {
+				open(topicName.c_str());
+			}
+			else {
+				open(id);
+			}
 
+		}
+		else if (command == "p_open") {
+			static MyString topicName;
+			std::cout << "Enter id or topic name: ";
+			std::cin >> topicName;
+			int id = fromString(topicName.c_str());
+			if (id == -1) {
+				p_open(topicName.c_str());
+			}
+			else {
+				p_open(id);
+			}
+		}
+		else if (command == "post") {
+			post();
+		}
+		else if (command == "comment") {
+			comment();
+		}
+		else if (command == "comments") {
+			comments();
+		}
+		else if (command == "reply") {
+			static unsigned id;
+			std::cout << "Enter id: ";
+			std::cin >> id;
+			reply(id);
+		}
+		else if (command == "upvote") {
+			static unsigned id;
+			std::cout << "Enter id: ";
+			std::cin >> id;
+			upvote(id);
+		}
+		else if (command == "downvote") {
+			static unsigned id;
+			std::cout << "Enter id: ";
+			std::cin >> id;
+			downvote(id);
+		}
+		else if (command == "list") {
+			list();
+		}
+		else if (command == "p_quit") {
+			p_quit();
+		}
+		else if (command == "quit") {
+			quit();
+		}
+		else if (command == "whoami") {
+			whoami();
+		}
+		else if (command == "about") {
+			about();
+		}
+		else if (command == "exit") {
+			break;
+		}
+		else {
+			std::cout << "Invalid command"<<std::endl;
 		}
 	}
 
 }
 void SocialNetwork::upvote(unsigned id) {
-	static Vector<Comment> comments = openedPost.get()->getComments();
+	if (loggedUser.get() == nullptr || openedTopic.get() == nullptr || openedPost.get() == nullptr) {
+		std::cout << "Cannot upvote" << std::endl;
+		return;
+	}
 	for (size_t i = 0; i < openedPost.get()->getComments().getSize(); i++)
 	{
-		if (comments[i].getID() == id && loggedUser.get()->upVoted==false) {
-			comments[i].IncreaseUpVote();
-			openedPost.get()->getComments() = comments;
+		if (openedPost.get()->getComments()[i].getID() == id && loggedUser.get()->upVoted == false) {
+			openedPost.get()->getComments()[i].IncreaseUpVote();
+			//openedPost.get()->getComments() = comments;
 			loggedUser.get()->upVoted = true;
 		}
-		else if (comments[i].getID() == id && loggedUser.get()->upVoted == true) {
-			comments[i].DecreaseUpVote();
-			openedPost.get()->getComments() = comments;
+		else if (openedPost.get()->getComments()[i].getID() == id && loggedUser.get()->upVoted == true) {
+			openedPost.get()->getComments()[i].DecreaseUpVote();
+			//openedPost.get()->getComments() = comments;
 			loggedUser.get()->upVoted = false;
 		}
 	}
 }
 void SocialNetwork::quit() {
+	if (openedTopic.get() == nullptr || loggedUser.get()==nullptr ) {
+		std::cout << "Cannot quit,no opened topic" << std::endl;
+		return;
+	}
 	openedTopic.set(nullptr);
 }
 void SocialNetwork::logout()
 {
-	std::cout << "Goodbye," << loggedUser.get()->firstName << loggedUser.get()->lastName;
-	loggedUser.set(nullptr);
+	if (loggedUser.get() == nullptr) {
+		std::cout << "Can't log out, no logged user" << std::endl;
+		return;
+	}
+		std::cout << "Goodbye," << loggedUser.get()->firstName << loggedUser.get()->lastName;
+		loggedUser.set(nullptr);
 }
 void SocialNetwork::p_quit() {
+	if (openedTopic.get() == nullptr || loggedUser.get() == nullptr||openedPost.get()==nullptr) {
+		std::cout << "Cannot post quit" << std::endl;
+		return;
+	}
 	openedPost.set(nullptr);
 }
 void SocialNetwork::downvote(unsigned id) {
-	static Vector<Comment> comments = openedPost.get()->getComments();
+	if (loggedUser.get() == nullptr || openedTopic.get() == nullptr || openedPost.get() == nullptr) {
+		std::cout << "Cannot downvote" << std::endl;
+		return;
+	}
+	//static Vector<Comment> comments = openedPost.get()->getComments();
 	for (size_t i = 0; i < openedPost.get()->getComments().getSize(); i++)
 	{
-		if (comments[i].getID() == id && loggedUser.get()->downVoted == false) {
-			comments[i].IncreaseDownVote();
-			openedPost.get()->getComments()= comments;
+		if (openedPost.get()->getComments()[i].getID() == id && loggedUser.get()->downVoted == false) {
+			openedPost.get()->getComments()[i].IncreaseDownVote();
 			loggedUser.get()->downVoted = true;
 		}
-		else if (comments[i].getID() == id && loggedUser.get()->downVoted == true) {
-			comments[i].DecreaseDownVote();
-			openedPost.get()->getComments() = comments;
+		else if (openedPost.get()->getComments()[i].getID() == id && loggedUser.get()->downVoted == true) {
+			openedPost.get()->getComments()[i].DecreaseDownVote();
 			loggedUser.get()->downVoted = false;
 		}
 	}
 }
 void SocialNetwork::create() {
-	if (loggedUser.get() == nullptr)
+	if (loggedUser.get() == nullptr){
+		std::cout << "Cannot create"<<std::endl;
 		return;
-	Topic newTopic;
+	}
+
+	static Topic newTopic;
 	std::cin >> newTopic;
 	newTopic.setID(idCount++);
 	newTopic.setCreator(*loggedUser.get());
@@ -410,13 +585,15 @@ void SocialNetwork::create() {
 	topics.pushBack(newTopic);
 
 }
-void SocialNetwork::search()
+void SocialNetwork::search(const MyString& topicName)
 {
-	static MyString topicName;
-	std::cin >> topicName;
+	if (loggedUser.get() == nullptr) {
+		std::cout << "No logged user, can't open a topic"<<std::endl;
+		return;
+	}
 	for (size_t i = 0; i < topics.getSize(); i++) {
 		if (searchInText(topics[i].getHeading(), topicName.c_str())) {
-			std::cout<<"-  "<<topics[i].getHeading();
+			std::cout<<"-  "<<topics[i].getHeading()<<"{id:"<<topics[i].id<<"}"<<std::endl;
 		}
 	}
 }

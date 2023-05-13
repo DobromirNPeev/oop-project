@@ -29,22 +29,23 @@ class SocialNetwork
 	bool signup();
 	bool login();
 	void logout();
-	void search();
+	void search(const MyString& topicName);
 	void create();
 	void open(const MyString& topicName);
 	void open(unsigned id);
-	void post(const MyString& title, const MyString& description);
+	void post();
 	void p_open(const MyString& postName);
 	void p_open(unsigned id);
-	void comment(const MyString& description);
+	void comment();
+	void comments();
 	void reply(unsigned id);
 	void upvote(unsigned id);
 	void downvote(unsigned id);
 	void list();
 	void p_quit();
 	void quit();
-	void whoiami();
-	void about(unsigned id);
+	void whoami();
+	void about();
 public:
 
 	SocialNetwork();

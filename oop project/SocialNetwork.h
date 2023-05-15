@@ -45,7 +45,7 @@ class SocialNetwork
 	void p_quit();
 	void quit();
 	void whoami();
-	void about();
+	void about(unsigned id);
 public:
 
 	SocialNetwork();

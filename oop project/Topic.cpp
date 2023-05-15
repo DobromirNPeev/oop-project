@@ -24,7 +24,7 @@ std::istream& operator>>(std::istream& is, Topic& topic) {
 std::ostream& operator<<(std::ostream& os,const Topic& topic) {
 	std::cout << ">>Name:" << topic.heading << std::endl;
 	std::cout << ">>Description:" << topic.description<<std::endl;
-	std::cout << ">>Created by:" << *(topic.creator)<<std::endl;
+	std::cout << ">>Created by:" << *(topic.creator);
 	std::cout << ">>Question asked:" <<topic.getPosts().getSize()<<std::endl;
 	return os;
 }

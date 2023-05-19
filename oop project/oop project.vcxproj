@@ -141,7 +141,6 @@
     <ClInclude Include="Post.h" />
     <ClInclude Include="SocialNetwork.h" />
     <ClInclude Include="Topic.h" />
-    <ClInclude Include="UniquePtr.hpp" />
     <ClInclude Include="User.h" />
     <ClInclude Include="Vector.hpp" />
   </ItemGroup>

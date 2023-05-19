@@ -221,7 +221,7 @@ template <typename T>
 size_t Vector<T>::calculateCapacity(const size_t number) const {
 	size_t result = DEFAULT_CAPACITY;
 	while (number > result)
-		result << 1;
+		result*=2;
 
 	return result;
 }
@@ -232,7 +232,7 @@ void Vector<T>::resize(const size_t expectedCapacityToFit) {
 	T* temp = new T[capacity];
 
 	for (size_t i = 0; i < size; i++)
-		temp[i] = data[i];
+		temp[i] = std::move(data[i]);
 
 	delete[] data;
 	data = temp;

@@ -1,6 +1,5 @@
 #pragma once
 #include "MyString.h"
-#include "UniquePtr.hpp"
 
 class User
 {

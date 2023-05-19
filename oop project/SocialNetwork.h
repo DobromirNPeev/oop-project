@@ -1,9 +1,9 @@
 #pragma once
-#include "UniquePtr.hpp"
 #include "User.h"
 #include "Topic.h"
 #include <fstream>
 #include "Vector.hpp"
+
 
 
 class SocialNetwork
@@ -12,6 +12,8 @@ class SocialNetwork
 	Topic readTopicFromBinaryFile(std::ifstream& ifs);
 	Post readPostFromBinaryFile(std::ifstream& ifs);
 	Comment readCommentFromBinaryFile(std::ifstream& ifs);
+	void printReplies(const Comment& comment,MyString& offset);
+	bool searchComment(unsigned id, const Comment& answer, Comment& toSearch);
 	int findUser();
 	int findTopic(unsigned n);
 	void writeUserToFile(std::ofstream& ofs,const User& user);
@@ -20,9 +22,9 @@ class SocialNetwork
 	void writeCommentToFile(std::ofstream& ofs,const Comment& comment);
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
-	UniquePtr<User> loggedUser;
-	UniquePtr<Topic> openedTopic;
-	UniquePtr<Post> openedPost;
+	User* loggedUser;
+	Topic* openedTopic;
+	Post* openedPost;
 	Vector<User> users;
 	Vector<Topic> topics;
 	static unsigned idCount;

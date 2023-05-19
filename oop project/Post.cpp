@@ -1,9 +1,8 @@
 #include "Post.h"
 
-unsigned Post::idCount=0;
 
-Post::Post() :Post("", "") {};
-Post::Post(const MyString& heading, const MyString& description) : heading(heading), description(description), id(idCount++) {};
+Post::Post() : Post("", "") {};
+Post::Post(const MyString& heading, const MyString& description) : heading(heading), description(description) {};
 Post::Post(const MyString& heading, const MyString& description,const Vector<Comment>& comments, unsigned id):
 			heading(heading),description(description),comments(comments),id(id){};
 

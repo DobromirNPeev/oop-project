@@ -1,7 +1,8 @@
 #include "Topic.h"
 
-Topic::Topic() :heading(""), description(""){};
-Topic::Topic(const MyString& heading, const User& creator, const MyString& description):heading(heading), creator(&creator), description(description),id(0) {}
+
+Topic::Topic() : heading(""), description(""){};
+Topic::Topic(const MyString& heading, const User& creator, const MyString& description) :heading(heading), creator(&creator), description(description), id(0) {};
 Topic::Topic(const MyString& heading,const User& creator, const MyString& description, Vector<Post> posts, unsigned id)
 	:heading(heading), creator(&creator), description(description), posts(posts), id(id) {};
 

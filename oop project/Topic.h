@@ -2,16 +2,16 @@
 #include "User.h"
 #include "Post.h"
 #include "Vector.hpp"
-#include "UniquePtr.hpp"
 
 class Topic
 {
 	MyString heading;
-	const User* creator;
+	const User* creator=nullptr;
 	size_t indexOfCreator=0;
 	Vector<Post> posts;
 	MyString description;
-	unsigned id;
+	unsigned id=0;
+	unsigned postsCounter=0;
 public:
 	Topic();
 	Topic(const MyString& heading, const User& creator, const MyString& description);

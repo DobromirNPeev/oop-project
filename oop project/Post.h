@@ -8,7 +8,7 @@ class Post
 	MyString heading;
 	MyString description;
 	Vector<Comment> comments;
-	static unsigned idCount;
+	unsigned commentsCounter = 0;
 	unsigned id;
 public:
 	Post();

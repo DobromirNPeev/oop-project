@@ -15,26 +15,43 @@ void Comment::IncreaseUpVote()
 };
 void Comment::DecreaseUpVote()
 {
-	upvoteCounter--;
-	if (upvoteCounter < 0) {
+	if (upvoteCounter <= 0) {
 		upvoteCounter = 0;
+	}
+	else {
+		upvoteCounter--;
 	}
 };
 void Comment::IncreaseDownVote() {
 	downvoteCounter++;
 }
 void Comment::DecreaseDownVote() {
-	downvoteCounter--;
-	if (downvoteCounter < 0) {
+	if (downvoteCounter <= 0) {
 		downvoteCounter = 0;
 	}
+	else {
+		downvoteCounter--;
+	}
+
 }
 std::istream& operator>>(std::istream& is, Comment& comment) {
 	is >> comment.description;
 	return is;
 }
 std::ostream& operator<<(std::ostream& os, const Comment& comment) {
-	std::cout << ">>" << comment.description << "{id:" << comment.id << "}"<<std::endl;
+	std::cout << ">>" << comment.description << "{id:" << comment.id << "}";
+	if (comment.downvoteCounter != 0) {
+		std::cout << "{downvote:" << comment.downvoteCounter << "}" << std::endl;
+	}
+	else if (comment.upvoteCounter != 0) {
+		std::cout << "{upvote:" << comment.upvoteCounter << "}" << std::endl;
+	}
+	else if (comment.downvoteCounter != 0 && comment.upvoteCounter != 0) {
+		std::cout << "{downvote:" << comment.downvoteCounter << "}" << "{upvote:" << comment.upvoteCounter << "}" << std::endl;
+	}
+	else {
+		std::cout << std::endl;
+	}
 	return os;
 }
 //void printReplies(const char* offset,const Comment& comment) {

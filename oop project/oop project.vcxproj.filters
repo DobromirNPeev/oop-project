@@ -36,6 +36,9 @@
     <ClCompile Include="Comment.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fileOperations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyString.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Vector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fileOperations.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

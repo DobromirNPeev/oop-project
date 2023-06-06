@@ -39,7 +39,7 @@ void Topic::setID(unsigned id)
 	this->id = id;
 }
 
-Vector<Post> Topic::getPosts() const
+const Vector<Post>& Topic::getPosts() const
 {
 	return posts;
 }

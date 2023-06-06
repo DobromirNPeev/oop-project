@@ -9,12 +9,11 @@ private:
 	MyString password;
 	unsigned id;
 	unsigned points;
-	bool upVoted = false;
-	bool downVoted = false;
+	bool voted = false;
 public:
 	User();
 	User(const MyString& firstName, const MyString& lastnName, const MyString& password);
-	User(const MyString& firstName, const MyString& lastnName, const MyString& password,unsigned id,unsigned points,bool upVoted,bool downVoted);
+	User(const MyString& firstName, const MyString& lastnName, const MyString& password,unsigned id,unsigned points,bool voted);
 	const MyString& getFirstName() const;
 	const MyString& getLastName() const;
 	friend std::istream& operator>>(std::istream& is, User& user);

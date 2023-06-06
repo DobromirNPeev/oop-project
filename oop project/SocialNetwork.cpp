@@ -2,158 +2,6 @@
 
 const char* OFFSET = "   ";
 
-MyString readStringFromFile(std::ifstream& file) {
-	int stringLength;
-	file.read((char*)&stringLength, sizeof(int));
-	char* str = new char[stringLength + 1];
-	file.read(str, stringLength);
-	str[stringLength] = '\0';
-
-	return str;
-}
-
-Comment SocialNetwork::readCommentFromBinaryFile(std::ifstream& ifs) {
-	Comment comment;
-	size_t indexOfCreator;
-	ifs.read((char*)&indexOfCreator, sizeof(indexOfCreator));
-	comment.creator = &users[indexOfCreator];
-	comment.indexOfCreator = indexOfCreator;
-	comment.description = readStringFromFile(ifs);
-	unsigned upVoteCounter;
-	ifs.read((char*)&upVoteCounter, sizeof(unsigned));
-	comment.upvoteCounter = upVoteCounter;
-	unsigned downVoteCounter;
-	ifs.read((char*)&downVoteCounter, sizeof(unsigned));
-	comment.downvoteCounter = downVoteCounter;
-	//unsigned commentIdCount;
-	//ifs.read((char*)&commentIdCount, sizeof(unsigned));
-	//comment.idCountComments = commentIdCount;
-	unsigned commentId;
-	ifs.read((char*)&commentId, sizeof(unsigned));
-	comment.id = commentId;
-	int repliesCount;
-	ifs.read((char*)&repliesCount, sizeof(int));
-	for (size_t i = 0; i < repliesCount; i++)
-	{
-		comment.replies.pushBack(readCommentFromBinaryFile(ifs));
-	}
-	return comment;
-}
-Post SocialNetwork::readPostFromBinaryFile(std::ifstream& ifs)
-{
-	Post post;
-	post.heading = readStringFromFile(ifs);
-	post.description = readStringFromFile(ifs);
-	unsigned commentsCounter;
-	ifs.read((char*)&commentsCounter, sizeof(unsigned));
-	post.commentsCounter = commentsCounter;
-	unsigned postId;
-	ifs.read((char*)&postId, sizeof(unsigned));
-	post.id = postId;
-	int commentsCount;
-	ifs.read((char*)&commentsCount, sizeof(int));
-	for (size_t i = 0; i < commentsCount; i++)
-	{
-		post.comments.pushBack(readCommentFromBinaryFile(ifs));
-	}
-	return post;
-}
-Topic SocialNetwork::readTopicFromBinaryFile(std::ifstream& ifs)
-{
-	Topic topic;
-	topic.heading = readStringFromFile(ifs);
-	size_t indexOfCreator;
-	ifs.read((char*)&indexOfCreator, sizeof(indexOfCreator));
-	topic.creator = &users[indexOfCreator];
-	topic.indexOfCreator = indexOfCreator;
-	topic.description = readStringFromFile(ifs);
-	unsigned topicId;
-	ifs.read((char*)&topicId, sizeof(unsigned));
-	topic.id = topicId;
-	int postsCount;
-	ifs.read((char*)&postsCount, sizeof(postsCount));
-	for (size_t i = 0; i < postsCount; i++)
-	{
-		topic.posts.pushBack(readPostFromBinaryFile(ifs));
-	}
-	return topic;
-}
-
-User SocialNetwork::readUserFromBinaryFile(std::ifstream& ifs)
-{	
-	User user;
-	user.firstName = readStringFromFile(ifs);
-	user.lastName = readStringFromFile(ifs);
-	user.password = readStringFromFile(ifs);
-	unsigned id;
-	ifs.read((char*)&id, sizeof(unsigned));
-	user.id = id;
-	unsigned points;
-	ifs.read((char*)&points, sizeof(unsigned));
-	user.points = points;
-	bool upOrDownVoted;
-	ifs.read((char*)&upOrDownVoted, sizeof(bool));
-	user.upVoted = upOrDownVoted;
-	ifs.read((char*)&upOrDownVoted, sizeof(bool));
-	user.downVoted = upOrDownVoted;
-	return user;
-}
-void writeStringToFile(std::ofstream& file, const char* str) {
-	int stringLength = strlen(str);
-	file.write((const char*)&stringLength, sizeof(int));
-	file.write(str, stringLength);
-}
-
-void SocialNetwork::writeCommentToFile(std::ofstream& ofs, const Comment& comment) {
-	ofs.write((const char*)&comment.indexOfCreator, sizeof(comment.indexOfCreator));
-	writeStringToFile(ofs, comment.description.c_str());
-	ofs.write((const char*)&comment.upvoteCounter, sizeof(comment.upvoteCounter));
-	ofs.write((const char*)&comment.downvoteCounter, sizeof(comment.downvoteCounter));
-	//ofs.write((const char*)&comment.idCountComments, sizeof(comment.idCountComments));
-	ofs.write((const char*)&comment.id, sizeof(comment.id));
-	int repliesSize = comment.replies.getSize();
-	ofs.write((const char*)&repliesSize, sizeof(repliesSize));
-	for (size_t i = 0; i < comment.replies.getSize(); i++)
-	{
-		//writeStringToFile(ofs, comment.replies[i]);
-		//writeStringToFile(ofs, comment.replies[i].c_str());
-		writeCommentToFile(ofs, comment.replies[i]);
-	}
-}
-void SocialNetwork::writePostToFile(std::ofstream& ofs, const Post& post) {
-	writeStringToFile(ofs, post.heading.c_str());
-	writeStringToFile(ofs, post.description.c_str());
-	ofs.write((const char*)&post.commentsCounter, sizeof(post.commentsCounter));
-	ofs.write((const char*)&post.id, sizeof(post.id));
-	int commentsSize = post.comments.getSize();
-	ofs.write((const char*)&commentsSize, sizeof(commentsSize));
-	for (size_t i = 0; i < post.comments.getSize(); i++)
-	{
-		writeCommentToFile(ofs, post.comments[i]);
-	}
-}
-void SocialNetwork::writeTopicToFile(std::ofstream& ofs, const Topic& topic) {
-	writeStringToFile(ofs, topic.heading.c_str());
-	ofs.write((const char*)&topic.indexOfCreator, sizeof(topic.indexOfCreator));
-	writeStringToFile(ofs, topic.description.c_str());
-	ofs.write((const char*)&topic.id, sizeof(topic.id));
-	int postsSize = topic.posts.getSize();
-	ofs.write((const char*)&postsSize, sizeof(postsSize));
-	for (size_t i = 0; i < topic.posts.getSize(); i++)
-	{
-		writePostToFile(ofs, topic.posts[i]);
-	}
-}
-void SocialNetwork::writeUserToFile(std::ofstream& ofs,const User& user) {
-	writeStringToFile(ofs, user.firstName.c_str());
-	writeStringToFile(ofs, user.lastName.c_str());
-	writeStringToFile(ofs, user.password.c_str());
-	ofs.write((const char*)&user.id, sizeof(user.id));
-	ofs.write((const char*)&user.points, sizeof(user.points));
-	ofs.write((const char*)&user.upVoted, sizeof(user.upVoted));
-	ofs.write((const char*)&user.downVoted, sizeof(user.downVoted));
-}
-
 SocialNetwork::~SocialNetwork() {
 	std::ofstream ofs("Data.dat", std::ios::out | std::ios::binary);
 	ofs.write((const char*)&idCount, sizeof(idCount));
@@ -178,17 +26,18 @@ SocialNetwork::SocialNetwork() {
 	ifs.read((char*)&usersSize, sizeof(usersSize));
 	for (size_t i = 0; i < usersSize; i++)
 	{
-		users.pushBack(readUserFromBinaryFile(ifs));
+		users.pushBack(std::move(readUserFromBinaryFile(ifs)));
 	}
 	int topicsSize = 0;
 	ifs.read((char*)&topicsSize, sizeof(topicsSize));
 	for (size_t i = 0; i < topicsSize; i++)
 	{
-		topics.pushBack(readTopicFromBinaryFile(ifs));
+		topics.pushBack(std::move(readTopicFromBinaryFile(ifs)));
 	}
 };
 
 unsigned SocialNetwork::idCount = 0;
+
 int SocialNetwork::findUser() {
 	for (size_t i = 0; i < users.getSize(); i++)
 	{
@@ -274,14 +123,6 @@ bool searchInText(const char* text, const char* pattern)
 	}
 	return false;
 }
-//int SocialNetwork::findLoggedUser() {
-//	for (size_t i = 0; i < users.getSize(); i++)
-//	{
-//		if (users[i].loggedIn) {
-//			return i;
-//		}
-//	}
-//}
 void SocialNetwork::open(const MyString& topicName) {
 	if (loggedUser == nullptr) {
 		std::cout << "Cannot acces topic, no logged user" << std::endl;
@@ -370,19 +211,8 @@ void SocialNetwork::comments() {
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
 		std::cout<< openedPost->comments[i];
-		if (openedPost->comments[i].downvoteCounter!=0) {
-			std::cout << "{downvote:" << openedPost->comments[i].downvoteCounter << "}" << std::endl;
-		}
-		else if(openedPost->comments[i].upvoteCounter != 0) {
-			std::cout << "{upvote:" << openedPost->comments[i].upvoteCounter << "}"<<std::endl;
-		}
-		else if (openedPost->comments[i].downvoteCounter != 0 && openedPost->comments[i].upvoteCounter != 0) {
-			std::cout << "{downvote:" << openedPost->comments[i].downvoteCounter << "}" << "{upvote:" << openedPost->comments[i].upvoteCounter << "}" << std::endl;
-		}
-		else {
 			printReplies(openedPost->comments[i],offset);
 			//std::cout<<std::endl;
-		}
 	}
 }
 void SocialNetwork::p_open(unsigned id) {
@@ -391,16 +221,16 @@ void SocialNetwork::p_open(unsigned id) {
 		return;
 	}
 	int size = openedTopic->getPosts().getSize();
-	//static Vector<Post> posts = openedTopic.get()->getPosts();
 	for (size_t i = 0; i < size; i++)
 	{
 		if (openedTopic->getPosts()[i].getID() == id) {
 			openedPost=&(openedTopic->posts[i]);
-			std::cout << openedTopic->getPosts()[i];
+			std::cout <<"Q:"<< openedTopic->getPosts()[i];
 			return;
 		}
 	}
 }
+
 bool SocialNetwork::searchComment(unsigned id,const Comment& answer,Comment& toSearch) {
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
@@ -425,15 +255,6 @@ void SocialNetwork::reply(unsigned id) {
 	std::cin>>answer;
 	answer.creator = loggedUser;
 	answer.id = openedPost->commentsCounter++;
-	//answer.creator = loggedUser.get();
-	//static Vector<Comment> comments = openedPost.get()->getComments();
-	//for (size_t i = 0; i < openedPost.get()->getComments().getSize(); i++)
-	//{
-	//	if (openedPost.get()->comments[i].getID() == id) {
-	//		//openedPost.get()->comments[i].replies.pushBack(answer);
-	//		std::cout << "Posted" << std::endl;
-	//	}
-	//}
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
 		if (openedPost->comments[i].id == id) {
@@ -445,17 +266,7 @@ void SocialNetwork::reply(unsigned id) {
 			if (searchComment(id, answer, openedPost->comments[i]))
 				break;
 		}
-
-		//if (openedPost->comments[i].getID() == id) {
-		//	openedPost->comments[i].replies.pushBack(answer);
-		//	std::cout << "Posted" << std::endl;
-		//	return;
-		//}
-		//if (openedPost->comments[i].replies.getSize() > 0) {
-		//	searchComment(id, answer);
-		//}
 	}
-	/*searchComment(id,answer,);*/
 }
 void SocialNetwork::post(){
 	if (openedTopic == nullptr || loggedUser==nullptr) {
@@ -615,22 +426,87 @@ void SocialNetwork::run(){
 	}
 
 }
+bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
+	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
+	{
+		if (toSearch.replies[i].id == id && loggedUser->voted == false) {
+			toSearch.replies[i].IncreaseUpVote();
+			loggedUser->voted = true;
+			return true;
+		}
+		else if (toSearch.replies[i].id == id && loggedUser->voted == true) {
+			toSearch.replies[i].DecreaseUpVote();
+			loggedUser->voted = false;
+			return true;
+		}
+		if (toSearch.replies[i].replies.getSize() > 0) {
+			if (searchCommentAndUpvote(id, toSearch.replies[i]))
+				return true;
+		}
+	}
+	return false;
+}
+bool SocialNetwork::searchCommentAndDownvote(unsigned id, Comment& toSearch) {
+	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
+	{
+		if (toSearch.replies[i].id == id && loggedUser->voted == false) {
+			toSearch.replies[i].IncreaseDownVote();
+			loggedUser->voted = true;
+			return true;
+		}
+		else if (toSearch.replies[i].id == id && loggedUser->voted == true) {
+			toSearch.replies[i].DecreaseDownVote();
+			loggedUser->voted = false;
+			return true;
+		}
+		if (toSearch.replies[i].replies.getSize() > 0) {
+			if (searchCommentAndUpvote(id, toSearch.replies[i]))
+				return true;
+		}
+	}
+	return false;
+}
 void SocialNetwork::upvote(unsigned id) {
 	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
 		std::cout << "Cannot upvote" << std::endl;
 		return;
 	}
+	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
+	{
+		if (openedPost->comments[i].id == id && loggedUser->voted == false) {
+			openedPost->comments[i].IncreaseUpVote();
+			loggedUser->voted = true;
+		}
+		else if (openedPost->comments[i].id == id && loggedUser->voted == true) {
+			openedPost->comments[i].DecreaseUpVote();
+			loggedUser->voted = false;
+		}
+		else {
+			if (searchCommentAndUpvote(id, openedPost->comments[i]))
+				break;
+		}
+	}
+}
+void SocialNetwork::downvote(unsigned id) {
+	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
+		std::cout << "Cannot downvote" << std::endl;
+		return;
+	}
+	//static Vector<Comment> comments = openedPost.get()->getComments();
 	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
 	{
-		if (openedPost->comments[i].getID() == id && loggedUser->upVoted == false) {
-			openedPost->comments[i].IncreaseUpVote();
-			//openedPost.get()->getComments() = comments;
-			loggedUser->upVoted = true;
+		if (openedPost->comments[i].id == id && loggedUser->voted == false) {
+			openedPost->comments[i].IncreaseDownVote();
+			loggedUser->voted = true;
 		}
-		else if (openedPost->comments[i].getID() == id && loggedUser->upVoted == true) {
-			openedPost->comments[i].DecreaseUpVote();
-			//openedPost.get()->getComments() = comments;
-			loggedUser->upVoted = false;
+		else if (openedPost->getComments()[i].getID() == id && loggedUser->voted == true) {
+			openedPost->comments[i].DecreaseDownVote();
+			loggedUser->voted = false;
+		}
+		else {
+			if (searchCommentAndDownvote(id, openedPost->comments[i]))
+				break;
+
 		}
 	}
 }
@@ -639,6 +515,7 @@ void SocialNetwork::quit() {
 		std::cout << "Cannot quit,no opened topic" << std::endl;
 		return;
 	}
+	std::cout << "You just left topic " << openedTopic->heading << std::endl;
 	openedTopic=nullptr;
 }
 void SocialNetwork::logout()
@@ -655,26 +532,10 @@ void SocialNetwork::p_quit() {
 		std::cout << "Cannot post quit" << std::endl;
 		return;
 	}
+	std::cout << "You just left " << openedPost->heading<<std::endl;
 	openedPost=nullptr;
 }
-void SocialNetwork::downvote(unsigned id) {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot downvote" << std::endl;
-		return;
-	}
-	//static Vector<Comment> comments = openedPost.get()->getComments();
-	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
-	{
-		if (openedPost->getComments()[i].getID() == id && loggedUser->downVoted == false) {
-			openedPost->getComments()[i].IncreaseDownVote();
-			loggedUser->downVoted = true;
-		}
-		else if (openedPost->getComments()[i].getID() == id && loggedUser->downVoted == true) {
-			openedPost->getComments()[i].DecreaseDownVote();
-			loggedUser->downVoted = false;
-		}
-	}
-}
+
 void SocialNetwork::create() {
 	if (loggedUser == nullptr){
 		std::cout << "Cannot create"<<std::endl;

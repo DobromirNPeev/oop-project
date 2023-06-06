@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Comment.cpp" />
+    <ClCompile Include="fileOperations.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="oop project.cpp" />
     <ClCompile Include="Post.cpp" />
@@ -137,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="fileOperations.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="Post.h" />
     <ClInclude Include="SocialNetwork.h" />

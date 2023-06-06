@@ -19,7 +19,7 @@ Vector<Comment> Post::getComments()
 	return comments;
 };
 std::ostream& operator<<(std::ostream& os, const Post& post) {
-	return os << "-  " << post.heading << "{id:" << post.id << "}" << std::endl;;
+	return os << post.heading << "{id:" << post.id << "}" << std::endl;;
 }
 std::istream& operator>>(std::istream& is, Post& post) {
 	std::cout << "Enter title: ";

@@ -3,31 +3,38 @@
 #include "Topic.h"
 #include <fstream>
 #include "Vector.hpp"
-
+#include "fileOperations.h"
 
 
 class SocialNetwork
 {
+
 	User readUserFromBinaryFile(std::ifstream& ifs);
 	Topic readTopicFromBinaryFile(std::ifstream& ifs);
 	Post readPostFromBinaryFile(std::ifstream& ifs);
 	Comment readCommentFromBinaryFile(std::ifstream& ifs);
+
+	void writeUserToFile(std::ofstream& ofs, const User& user);
+	void writeTopicToFile(std::ofstream& ofs, const Topic& topic);
+	void writePostToFile(std::ofstream& ofs, const Post& post);
+	void writeCommentToFile(std::ofstream& ofs, const Comment& comment);
+
 	void printReplies(const Comment& comment,MyString& offset);
 	bool searchComment(unsigned id, const Comment& answer, Comment& toSearch);
+	bool searchCommentAndUpvote(unsigned id, Comment& toSearch);
+	bool searchCommentAndDownvote(unsigned id, Comment& toSearch);
 	int findUser();
 	int findTopic(unsigned n);
-	void writeUserToFile(std::ofstream& ofs,const User& user);
-	void writeTopicToFile(std::ofstream& ofs,const Topic& topic);
-	void writePostToFile(std::ofstream& ofs,const Post& post);
-	void writeCommentToFile(std::ofstream& ofs,const Comment& comment);
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
+
 	User* loggedUser;
 	Topic* openedTopic;
 	Post* openedPost;
 	Vector<User> users;
 	Vector<Topic> topics;
 	static unsigned idCount;
+
 	bool signup();
 	bool login();
 	void logout();

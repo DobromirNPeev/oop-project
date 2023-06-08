@@ -40,14 +40,15 @@ std::istream& operator>>(std::istream& is, Comment& comment) {
 }
 std::ostream& operator<<(std::ostream& os, const Comment& comment) {
 	std::cout << ">>" << comment.description << "{id:" << comment.id << "}";
-	if (comment.downvoteCounter != 0) {
-		std::cout << "{downvote:" << comment.downvoteCounter << "}" << std::endl;
+	if (comment.downvoteCounter != 0 && comment.upvoteCounter != 0)
+	{
+		std::cout << "{downvote:" << comment.downvoteCounter << "}" << "{upvote:" << comment.upvoteCounter << "}" << std::endl;
 	}
 	else if (comment.upvoteCounter != 0) {
 		std::cout << "{upvote:" << comment.upvoteCounter << "}" << std::endl;
 	}
-	else if (comment.downvoteCounter != 0 && comment.upvoteCounter != 0) {
-		std::cout << "{downvote:" << comment.downvoteCounter << "}" << "{upvote:" << comment.upvoteCounter << "}" << std::endl;
+	else if (comment.downvoteCounter != 0) {
+		std::cout << "{downvote:" << comment.downvoteCounter << "}" << std::endl;
 	}
 	else {
 		std::cout << std::endl;

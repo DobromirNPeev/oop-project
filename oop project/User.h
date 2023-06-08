@@ -1,5 +1,6 @@
 #pragma once
 #include "MyString.h"
+#include "Vector.hpp"
 
 class User
 {
@@ -9,6 +10,7 @@ private:
 	MyString password;
 	unsigned id;
 	unsigned points;
+	Vector<int> votedComments;
 	bool voted = false;
 public:
 	User();

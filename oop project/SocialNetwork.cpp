@@ -47,16 +47,15 @@ int SocialNetwork::findUser() {
 	}
 	return -1;
 }
-bool SocialNetwork::signup() {
+void SocialNetwork::signup() {
 	User current;
 	std::cin >> current;
 	current.id=SocialNetwork::idCount++;
 	if (!containsUser(current)) {
 		std::cout << "User already exists" << std::endl;
-		return false;
+		return;
 	}
 	users.pushBack(current);
-	return true;
 }
 int SocialNetwork::findTopic(unsigned n) {
 	for (size_t i = 0; i < topics.getSize(); i++)
@@ -82,7 +81,7 @@ void SocialNetwork::about(unsigned id) {
 	}
 	std::cout << topics[findTopic(id)];
 }
-bool SocialNetwork::login() {
+void SocialNetwork::login() {
 	MyString name;
 	MyString password;
 	std::cout << "Name: ";
@@ -92,11 +91,10 @@ bool SocialNetwork::login() {
 	int i = 0;
 	if ((i=containsUser(name,password))==-1) {
 		std::cout << "Incorrect, please try again"<<std::endl;
-		return false;
+		return;
 	}
 	std::cout << "Welcome "<<name<<std::endl;
 	loggedUser=&users[i];
-	return true;
 }
 bool isPrefix(const char* pattern, const char* text)
 {
@@ -136,6 +134,7 @@ void SocialNetwork::open(const MyString& topicName) {
 			return;
 		}
 	}
+	std::cout << "No such topic" << std::endl;
 }
 void SocialNetwork::open(unsigned id) {
 	if (loggedUser == nullptr) {
@@ -150,6 +149,8 @@ void SocialNetwork::open(unsigned id) {
 			return;
 		}
 	}
+	std::cout << "No such topic" << std::endl;
+
 }
 void SocialNetwork::list() {
 	if (loggedUser == nullptr || openedTopic==nullptr) {
@@ -177,6 +178,7 @@ void SocialNetwork::p_open(const MyString& postName) {
 			return;
 		}
 	}
+	std::cout << "No such post" << std::endl;
 }
 void SocialNetwork::comment() {
 	if (loggedUser == nullptr || openedTopic==nullptr || openedPost==nullptr) {
@@ -225,10 +227,12 @@ void SocialNetwork::p_open(unsigned id) {
 	{
 		if (openedTopic->getPosts()[i].getID() == id) {
 			openedPost=&(openedTopic->posts[i]);
-			std::cout <<"Q:"<< openedTopic->getPosts()[i];
+			std::cout <<"Q: "<< openedTopic->getPosts()[i];
 			return;
 		}
 	}
+	std::cout << "No such post" << std::endl;
+
 }
 
 bool SocialNetwork::searchComment(unsigned id,const Comment& answer,Comment& toSearch) {
@@ -377,7 +381,7 @@ void SocialNetwork::run(){
 		else if (command == "comments") {
 			comments();
 		}
-		else if (command == "reply") {
+		else if (command == "reply")  {
 			unsigned id;
 			std::cout << "Enter comment id: ";
 			std::cin >> id;
@@ -432,11 +436,13 @@ bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
 		if (toSearch.replies[i].id == id && loggedUser->voted == false) {
 			toSearch.replies[i].IncreaseUpVote();
 			loggedUser->voted = true;
+			loggedUser->votedComments.pushBack(id);
 			return true;
 		}
 		else if (toSearch.replies[i].id == id && loggedUser->voted == true) {
 			toSearch.replies[i].DecreaseUpVote();
 			loggedUser->voted = false;
+			loggedUser->votedComments.pushBack(id);
 			return true;
 		}
 		if (toSearch.replies[i].replies.getSize() > 0) {
@@ -451,11 +457,13 @@ bool SocialNetwork::searchCommentAndDownvote(unsigned id, Comment& toSearch) {
 	{
 		if (toSearch.replies[i].id == id && loggedUser->voted == false) {
 			toSearch.replies[i].IncreaseDownVote();
+			loggedUser->votedComments.pushBack(id);
 			loggedUser->voted = true;
 			return true;
 		}
 		else if (toSearch.replies[i].id == id && loggedUser->voted == true) {
 			toSearch.replies[i].DecreaseDownVote();
+			loggedUser->votedComments.pushBack(id);
 			loggedUser->voted = false;
 			return true;
 		}
@@ -475,10 +483,12 @@ void SocialNetwork::upvote(unsigned id) {
 	{
 		if (openedPost->comments[i].id == id && loggedUser->voted == false) {
 			openedPost->comments[i].IncreaseUpVote();
+			loggedUser->votedComments.pushBack(id);
 			loggedUser->voted = true;
 		}
 		else if (openedPost->comments[i].id == id && loggedUser->voted == true) {
 			openedPost->comments[i].DecreaseUpVote();
+			loggedUser->votedComments.pushBack(id);
 			loggedUser->voted = false;
 		}
 		else {
@@ -497,10 +507,12 @@ void SocialNetwork::downvote(unsigned id) {
 	{
 		if (openedPost->comments[i].id == id && loggedUser->voted == false) {
 			openedPost->comments[i].IncreaseDownVote();
+			loggedUser->votedComments.pushBack(id);
 			loggedUser->voted = true;
 		}
 		else if (openedPost->getComments()[i].getID() == id && loggedUser->voted == true) {
 			openedPost->comments[i].DecreaseDownVote();
+			loggedUser->votedComments.pushBack(id);
 			loggedUser->voted = false;
 		}
 		else {

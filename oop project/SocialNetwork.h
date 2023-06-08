@@ -4,6 +4,7 @@
 #include <fstream>
 #include "Vector.hpp"
 #include "fileOperations.h"
+#include "FactorySingleton.h"
 
 
 class SocialNetwork
@@ -28,6 +29,8 @@ class SocialNetwork
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
 
+	//FactorySingleton fac;
+
 	User* loggedUser;
 	Topic* openedTopic;
 	Post* openedPost;
@@ -35,8 +38,8 @@ class SocialNetwork
 	Vector<Topic> topics;
 	static unsigned idCount;
 
-	bool signup();
-	bool login();
+	void signup();
+	void login();
 	void logout();
 	void search(const MyString& topicName);
 	void create();

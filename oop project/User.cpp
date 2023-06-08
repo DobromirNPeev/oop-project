@@ -1,5 +1,27 @@
 #include "User.h"
 
+int User::searchUpvotedId(int id) const
+{
+	for (size_t i = 0; i < upvotedComments.getSize(); i++)
+	{
+		if (votedComments[i] == id)
+			return i;
+	}
+	return -1;
+}
+
+int User::searchDOwnvotedId(int id) const
+{
+	for (size_t i = 0; i < downvotedComments.getSize(); i++)
+	{
+		if (downvotedComments[i] == id) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
 User::User() :firstName(""), lastName(""), password(""), id(0), points(0) {};
 User::User(const MyString& firstName, const MyString& lastName, const MyString& password) :
 		firstName(firstName), lastName(lastName), password(password), id(0), points(0)  {};

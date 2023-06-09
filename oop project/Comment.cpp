@@ -77,14 +77,3 @@ std::ostream& operator<<(std::ostream& os, const Comment& comment) {
 	}
 	return os;
 }
-//void printReplies(const char* offset,const Comment& comment) {
-//	MyString innerOffset(offset);
-//	for (size_t i = 0; i < comment.replies.getSize(); i++)
-//	{
-//		std::cout << offset<< comment.replies[i];
-//		if (comment.replies[i].replies.getSize() != 0) {
-//			innerOffset += offset;
-//			//printReplies(innerOffset.c_str(), comment.replies[i]);
-//		}
-//	}
-//}

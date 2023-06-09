@@ -3,9 +3,8 @@
 #include "Topic.h"
 #include <fstream>
 #include "Vector.hpp"
-#include "fileOperations.h"
-#include "FactorySingleton.h"
 
+static const char* OFFSET = "   ";
 
 class SocialNetwork
 {
@@ -29,14 +28,14 @@ class SocialNetwork
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
 
-	//FactorySingleton fac;
-
-	User* loggedUser;
-	Topic* openedTopic;
-	Post* openedPost;
+	User* loggedUser=nullptr;
+	Topic* openedTopic=nullptr;
+	Post* openedPost=nullptr;
 	Vector<User> users;
 	Vector<Topic> topics;
 	static unsigned idCount;
+
+	friend class Command;
 
 	void signup();
 	void login();
@@ -63,7 +62,8 @@ class SocialNetwork
 public:
 
 	SocialNetwork();
-	
+	SocialNetwork(const SocialNetwork& other) = delete;
+	SocialNetwork& operator=(const SocialNetwork& other) = delete;
 	~SocialNetwork();
 
 	void run();

@@ -1,4 +1,4 @@
-#include "fileOperations.h"
+#include "SocialNetwork.h"
 
 namespace {
 	MyString readStringFromFile(std::ifstream& file) {
@@ -122,7 +122,6 @@ void SocialNetwork::writeCommentToFile(std::ofstream& ofs, const Comment& commen
 	writeStringToFile(ofs, comment.description.c_str());
 	ofs.write((const char*)&comment.upvoteCounter, sizeof(comment.upvoteCounter));
 	ofs.write((const char*)&comment.downvoteCounter, sizeof(comment.downvoteCounter));
-	//ofs.write((const char*)&comment.idCountComments, sizeof(comment.idCountComments));
 	ofs.write((const char*)&comment.id, sizeof(comment.id));
 	size_t sizeOfUpvoters = comment.indexesOfUpvoters.getSize();
 	ofs.write((const char*)&sizeOfUpvoters, sizeof(size_t));

@@ -10,8 +10,6 @@ private:
 	MyString password;
 	unsigned id;
 	unsigned points;
-	Vector<int> votedComments;
-	bool voted = false;
 public:
 	User();
 	User(const MyString& firstName, const MyString& lastnName, const MyString& password);

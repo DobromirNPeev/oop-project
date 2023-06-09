@@ -39,6 +39,12 @@
     <ClCompile Include="fileOperations.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FactorySingleton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyString.h">
@@ -63,6 +69,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fileOperations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FactorySingleton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Commands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

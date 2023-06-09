@@ -21,7 +21,7 @@ class SocialNetwork
 	void writeCommentToFile(std::ofstream& ofs, const Comment& comment);
 
 	void printReplies(const Comment& comment,MyString& offset);
-	bool searchComment(unsigned id, const Comment& answer, Comment& toSearch);
+	bool searchComment(unsigned id, Comment& toSearch);
 	bool searchCommentAndUpvote(unsigned id, Comment& toSearch);
 	bool searchCommentAndDownvote(unsigned id, Comment& toSearch);
 	int findUser();
@@ -58,6 +58,8 @@ class SocialNetwork
 	void quit();
 	void whoami();
 	void about(unsigned id);
+
+
 public:
 
 	SocialNetwork();

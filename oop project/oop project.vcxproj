@@ -127,7 +127,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Commands.cpp" />
     <ClCompile Include="Comment.cpp" />
+    <ClCompile Include="FactorySingleton.cpp" />
     <ClCompile Include="fileOperations.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="oop project.cpp" />
@@ -137,7 +139,9 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Commands.h" />
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="FactorySingleton.h" />
     <ClInclude Include="fileOperations.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="Post.h" />

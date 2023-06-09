@@ -82,6 +82,10 @@ void SocialNetwork::about(unsigned id) {
 	std::cout << topics[findTopic(id)];
 }
 void SocialNetwork::login() {
+	if (loggedUser != nullptr) {
+		std::cout << "Already logged in" << std::endl;
+		return;
+	}
 	MyString name;
 	MyString password;
 	std::cout << "Name: ";
@@ -122,8 +126,8 @@ bool searchInText(const char* text, const char* pattern)
 	return false;
 }
 void SocialNetwork::open(const MyString& topicName) {
-	if (loggedUser == nullptr) {
-		std::cout << "Cannot acces topic, no logged user" << std::endl;
+	if (loggedUser == nullptr|| openedTopic!=nullptr) {
+		std::cout << "Cannot acces topic" << std::endl;
 		return;
 	}
 	for (size_t i = 0; i < topics.getSize(); i++)
@@ -154,7 +158,7 @@ void SocialNetwork::open(unsigned id) {
 }
 void SocialNetwork::list() {
 	if (loggedUser == nullptr || openedTopic==nullptr) {
-		std::cout << "Cannot acces topics" << std::endl;
+		std::cout << "Cannot acces posts" << std::endl;
 		return;
 	}
 	unsigned numberOfPosts = openedTopic->getPosts().getSize();
@@ -235,16 +239,21 @@ void SocialNetwork::p_open(unsigned id) {
 
 }
 
-bool SocialNetwork::searchComment(unsigned id,const Comment& answer,Comment& toSearch) {
+bool SocialNetwork::searchComment(unsigned id, Comment& toSearch) {
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
 		if (toSearch.replies[i].id == id) {
+			std::cout << "Say somehting: ";
+			Comment answer;
+			std::cin >> answer;
+			answer.creator = loggedUser;
+			answer.id = openedPost->commentsCounter++;
 			toSearch.replies[i].replies.pushBack(answer);
 			std::cout << "Posted" << std::endl;
 			return true;
 		}
 		if (toSearch.replies[i].replies.getSize()> 0) {
-			searchComment(id,answer, toSearch.replies[i]);
+			searchComment(id, toSearch.replies[i]);
 		}
 	}
 	return false;
@@ -254,21 +263,22 @@ void SocialNetwork::reply(unsigned id) {
 		std::cout << "Cannot reply" << std::endl;
 		return;
 	}
-	std::cout << "Say somehting: ";
-	Comment answer;
-	std::cin>>answer;
-	answer.creator = loggedUser;
-	answer.id = openedPost->commentsCounter++;
+	
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
 		if (openedPost->comments[i].id == id) {
+			std::cout << "Say somehting: ";
+			Comment answer;
+			std::cin >> answer;
+			answer.creator = loggedUser;
+			answer.id = openedPost->commentsCounter++;
 			openedPost->comments[i].replies.pushBack(answer);
 			std::cout << "Posted" << std::endl;
 			return;
 		}
 		else {
-			if (searchComment(id, answer, openedPost->comments[i]))
-				break;
+			if (searchComment(id, openedPost->comments[i]))
+				return;
 		}
 	}
 }
@@ -326,6 +336,7 @@ void SocialNetwork::run(){
 	std::cout << "| about - shows info about a certain topic" << std::endl;
 
 	while (true) {
+		std::cout << std::endl;
 		std::cout << ">";
 		std::cin >> command;
 
@@ -433,6 +444,61 @@ void SocialNetwork::run(){
 bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
+		int searchUpvoted = toSearch.replies[i].didUserUpvoted(loggedUser->id);
+		int searchDownvoted = toSearch.replies[i].didUserDownvoted(loggedUser->id);
+		if (toSearch.replies[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
+			toSearch.replies[i].IncreaseUpVote();
+			toSearch.replies[i].indexesOfUpvoters.pushBack(loggedUser->id);
+			return true;
+		}
+		else if (toSearch.replies[i].id == id && searchUpvoted != -1) {
+			toSearch.replies[i].DecreaseUpVote();
+			toSearch.replies[i].indexesOfUpvoters.popAt(searchUpvoted);
+			return true;
+		}
+		else if (toSearch.replies[i].id == id && searchDownvoted != -1) {
+			toSearch.replies[i].IncreaseUpVote();
+			toSearch.replies[i].DecreaseDownVote();
+			toSearch.replies[i].indexesOfUpvoters.pushBack(loggedUser->id);
+			toSearch.replies[i].indexesOfDownvoters.popAt(searchDownvoted);
+			return true;
+		}
+		else if (toSearch.replies[i].replies.getSize() > 0) {
+			if (searchCommentAndUpvote(id, toSearch.replies[i]))
+				return true;
+		}
+	}
+	return false;
+	/*int searchUpvoted = loggedUser->searchUpvotedId(id);
+	int searchDownVoted = loggedUser->searchDownvotedId(id);
+	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
+	{
+
+		if (toSearch.replies[i].id == id && searchUpvoted == -1 && searchDownVoted == -1) {
+			toSearch.replies[i].IncreaseUpVote();
+			loggedUser->upvotedComments.pushBack(id);
+			return true;
+		}
+		else if (toSearch.replies[i].id == id && searchUpvoted != -1) {
+			toSearch.replies[i].DecreaseUpVote();
+			loggedUser->upvotedComments.popAt(searchUpvoted);
+			return true;
+		}
+		else if (toSearch.replies[i].id == id && searchDownVoted != -1) {
+			toSearch.replies[i].IncreaseUpVote();
+			toSearch.replies[i].DecreaseDownVote();
+			loggedUser->upvotedComments.pushBack(id);
+			loggedUser->downvotedComments.popAt(searchUpvoted);
+			return true;
+		}
+		if (toSearch.replies[i].replies.getSize() > 0) {
+			if (searchCommentAndUpvote(id, toSearch.replies[i]))
+				return true;
+		}
+	}
+	return false;*/
+	/*for (size_t i = 0; i < toSearch.replies.getSize(); i++)
+	{
 		if (toSearch.replies[i].id == id && loggedUser->voted == false) {
 			toSearch.replies[i].IncreaseUpVote();
 			loggedUser->voted = true;
@@ -450,77 +516,156 @@ bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
 				return true;
 		}
 	}
-	return false;
+	return false;*/
 }
 bool SocialNetwork::searchCommentAndDownvote(unsigned id, Comment& toSearch) {
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
-		if (toSearch.replies[i].id == id && loggedUser->voted == false) {
+		int searchUpvoted = toSearch.replies[i].didUserUpvoted(loggedUser->id);
+		int searchDownvoted = toSearch.replies[i].didUserDownvoted(loggedUser->id);
+
+		if (toSearch.replies[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
 			toSearch.replies[i].IncreaseDownVote();
-			loggedUser->votedComments.pushBack(id);
-			loggedUser->voted = true;
+			toSearch.replies[i].indexesOfDownvoters.pushBack(loggedUser->id);
+			//loggedUser->downvotedComments.pushBack(id);
 			return true;
 		}
-		else if (toSearch.replies[i].id == id && loggedUser->voted == true) {
+		else if (toSearch.replies[i].id == id && searchDownvoted != -1) {
 			toSearch.replies[i].DecreaseDownVote();
-			loggedUser->votedComments.pushBack(id);
-			loggedUser->voted = false;
+			toSearch.replies[i].indexesOfDownvoters.popAt(searchDownvoted);
+
+			//loggedUser->downvotedComments.popAt(searchDownVoted);
 			return true;
 		}
-		if (toSearch.replies[i].replies.getSize() > 0) {
-			if (searchCommentAndUpvote(id, toSearch.replies[i]))
+		else if (toSearch.replies[i].id == id && searchUpvoted != -1) {
+			toSearch.replies[i].DecreaseUpVote();
+			toSearch.replies[i].IncreaseDownVote();
+			toSearch.replies[i].indexesOfDownvoters.pushBack(loggedUser->id);
+			toSearch.replies[i].indexesOfUpvoters.popAt(searchUpvoted);
+			//loggedUser->downvotedComments.pushBack(id);
+			//loggedUser->upvotedComments.popAt(searchUpvoted);
+			return true;
+		}
+		else if (toSearch.replies[i].replies.getSize() > 0) {
+			if (searchCommentAndDownvote(id, toSearch.replies[i]))
 				return true;
 		}
 	}
 	return false;
+	//for (size_t i = 0; i < toSearch.replies.getSize(); i++)
+	//{
+	//	if (toSearch.replies[i].id == id && loggedUser->searchId(id)==-1) {
+	//		toSearch.replies[i].IncreaseDownVote();
+	//		loggedUser->votedComments.pushBack(id);
+	//		loggedUser->voted = true;
+	//		return true;
+	//	}
+	//	else if (toSearch.replies[i].id == id && loggedUser->searchId(id)!=-1) {
+	//		toSearch.replies[i].DecreaseDownVote();
+	//		//loggedUser->votedComments(id);
+	//		loggedUser->voted = false;
+	//		return true;
+	//	}
+	//	if (toSearch.replies[i].replies.getSize() > 0) {
+	//		if (searchCommentAndUpvote(id, toSearch.replies[i]))
+	//			return true;
+	//	}
+	//}
+	//return false;
 }
 void SocialNetwork::upvote(unsigned id) {
 	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
 		std::cout << "Cannot upvote" << std::endl;
 		return;
 	}
+	
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
-		if (openedPost->comments[i].id == id && loggedUser->voted == false) {
+		int searchUpvoted = openedPost->comments[i].didUserUpvoted(loggedUser->id);
+		int searchDownvoted = openedPost->comments[i].didUserDownvoted(loggedUser->id);
+		if (openedPost->comments[i].id == id && searchUpvoted == -1 && searchDownvoted==-1) {
 			openedPost->comments[i].IncreaseUpVote();
-			loggedUser->votedComments.pushBack(id);
-			loggedUser->voted = true;
+			openedPost->comments[i].indexesOfUpvoters.pushBack(loggedUser->id);
+			break;
 		}
-		else if (openedPost->comments[i].id == id && loggedUser->voted == true) {
+		else if (openedPost->comments[i].id == id && searchUpvoted != -1) {
 			openedPost->comments[i].DecreaseUpVote();
-			loggedUser->votedComments.pushBack(id);
-			loggedUser->voted = false;
+			openedPost->comments[i].indexesOfUpvoters.popAt(searchUpvoted);
+			break;
 		}
-		else {
+		else if (openedPost->comments[i].id == id &&  searchDownvoted != -1) {
+			openedPost->comments[i].IncreaseUpVote();
+			openedPost->comments[i].DecreaseDownVote();
+			openedPost->comments[i].indexesOfUpvoters.pushBack(loggedUser->id);
+			openedPost->comments[i].indexesOfDownvoters.popAt(searchDownvoted);
+			break;
+		}
+		else if (openedPost->comments[i].replies.getSize() > 0) {
 			if (searchCommentAndUpvote(id, openedPost->comments[i]))
-				break;
+				return;
 		}
 	}
 }
 void SocialNetwork::downvote(unsigned id) {
 	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot downvote" << std::endl;
+		std::cout << "Cannot upvote" << std::endl;
 		return;
 	}
-	//static Vector<Comment> comments = openedPost.get()->getComments();
 	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
 	{
-		if (openedPost->comments[i].id == id && loggedUser->voted == false) {
-			openedPost->comments[i].IncreaseDownVote();
-			loggedUser->votedComments.pushBack(id);
-			loggedUser->voted = true;
-		}
-		else if (openedPost->getComments()[i].getID() == id && loggedUser->voted == true) {
-			openedPost->comments[i].DecreaseDownVote();
-			loggedUser->votedComments.pushBack(id);
-			loggedUser->voted = false;
-		}
-		else {
-			if (searchCommentAndDownvote(id, openedPost->comments[i]))
-				break;
+		int searchUpvoted = openedPost->comments[i].didUserUpvoted(loggedUser->id);
+		int searchDownvoted = openedPost->comments[i].didUserDownvoted(loggedUser->id);
 
+		if (openedPost->comments[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
+			openedPost->comments[i].IncreaseDownVote();
+			openedPost->comments[i].indexesOfDownvoters.pushBack(loggedUser->id);
+			//loggedUser->downvotedComments.pushBack(id);
+			return;
+		}
+		else if (openedPost->comments[i].id == id && searchDownvoted != -1) {
+			openedPost->comments[i].DecreaseDownVote();
+			openedPost->comments[i].indexesOfDownvoters.popAt(searchUpvoted);
+
+			//loggedUser->downvotedComments.popAt(searchDownVoted);
+			return;
+		}
+		else if (openedPost->comments[i].id == id && searchUpvoted != -1) {
+			openedPost->comments[i].DecreaseUpVote();
+			openedPost->comments[i].IncreaseDownVote();
+			openedPost->comments[i].indexesOfDownvoters.pushBack(loggedUser->id);
+			openedPost->comments[i].indexesOfUpvoters.popAt(searchUpvoted);
+			//loggedUser->downvotedComments.pushBack(id);
+			//loggedUser->upvotedComments.popAt(searchUpvoted);
+			return;
+		}
+		else if(openedPost->comments[i].replies.getSize()>0) {
+			if (searchCommentAndDownvote(id, openedPost->comments[i]))
+				return;
 		}
 	}
+	//if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
+	//	std::cout << "Cannot downvote" << std::endl;
+	//	return;
+	//}
+	////static Vector<Comment> comments = openedPost.get()->getComments();
+	//for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
+	//{
+	//	if (openedPost->comments[i].id == id && loggedUser->voted == false) {
+	//		openedPost->comments[i].IncreaseDownVote();
+	//		loggedUser->votedComments.pushBack(id);
+	//		loggedUser->voted = true;
+	//	}
+	//	else if (openedPost->getComments()[i].getID() == id && loggedUser->voted == true) {
+	//		openedPost->comments[i].DecreaseDownVote();
+	//		loggedUser->votedComments.pushBack(id);
+	//		loggedUser->voted = false;
+	//	}
+	//	else {
+	//		if (searchCommentAndDownvote(id, openedPost->comments[i]))
+	//			break;
+
+	//	}
+	//}
 }
 void SocialNetwork::quit() {
 	if (openedTopic == nullptr || loggedUser==nullptr ) {
@@ -529,6 +674,7 @@ void SocialNetwork::quit() {
 	}
 	std::cout << "You just left topic " << openedTopic->heading << std::endl;
 	openedTopic=nullptr;
+	openedPost = nullptr;
 }
 void SocialNetwork::logout()
 {
@@ -538,6 +684,8 @@ void SocialNetwork::logout()
 	}
 		std::cout << "Goodbye," << loggedUser->firstName<<" " << loggedUser->lastName << std::endl;
 		loggedUser=nullptr;
+		openedTopic = nullptr;
+		openedPost = nullptr;
 }
 void SocialNetwork::p_quit() {
 	if (openedTopic == nullptr || loggedUser == nullptr||openedPost==nullptr) {

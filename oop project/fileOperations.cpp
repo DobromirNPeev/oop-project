@@ -35,6 +35,22 @@ Comment SocialNetwork::readCommentFromBinaryFile(std::ifstream& ifs) {
 	unsigned commentId;
 	ifs.read((char*)&commentId, sizeof(unsigned));
 	comment.id = commentId;
+	size_t sizeOfUpvoters;
+	ifs.read((char*)&sizeOfUpvoters, sizeof(size_t));
+	for (size_t i = 0; i < sizeOfUpvoters; i++)
+	{
+		int currentInd;
+		ifs.read((char*)&currentInd, sizeof(int));
+		comment.indexesOfUpvoters.pushBack(currentInd);
+	}
+	size_t sizeOfDownvoters;
+	ifs.read((char*)&sizeOfDownvoters, sizeof(size_t));
+	for (size_t i = 0; i < sizeOfDownvoters; i++)
+	{
+		int currentInd;
+		ifs.read((char*)&currentInd, sizeof(int));
+		comment.indexesOfDownvoters.pushBack(currentInd);
+	}
 	int repliesCount;
 	ifs.read((char*)&repliesCount, sizeof(int));
 	for (size_t i = 0; i < repliesCount; i++)
@@ -74,6 +90,9 @@ Topic SocialNetwork::readTopicFromBinaryFile(std::ifstream& ifs)
 	unsigned topicId;
 	ifs.read((char*)&topicId, sizeof(unsigned));
 	topic.id = topicId;
+	unsigned postsCounter;
+	ifs.read((char*)&postsCounter, sizeof(unsigned));
+	topic.postsCounter = postsCounter;
 	int postsCount;
 	ifs.read((char*)&postsCount, sizeof(postsCount));
 	for (size_t i = 0; i < postsCount; i++)
@@ -95,9 +114,6 @@ User SocialNetwork::readUserFromBinaryFile(std::ifstream& ifs)
 	unsigned points;
 	ifs.read((char*)&points, sizeof(unsigned));
 	user.points = points;
-	bool voted;
-	ifs.read((char*)&voted, sizeof(bool));
-	user.voted = voted;
 	return user;
 }
 
@@ -108,6 +124,18 @@ void SocialNetwork::writeCommentToFile(std::ofstream& ofs, const Comment& commen
 	ofs.write((const char*)&comment.downvoteCounter, sizeof(comment.downvoteCounter));
 	//ofs.write((const char*)&comment.idCountComments, sizeof(comment.idCountComments));
 	ofs.write((const char*)&comment.id, sizeof(comment.id));
+	size_t sizeOfUpvoters = comment.indexesOfUpvoters.getSize();
+	ofs.write((const char*)&sizeOfUpvoters, sizeof(size_t));
+	for (size_t i = 0; i < sizeOfUpvoters; i++)
+	{
+	ofs.write((const char*)&comment.indexesOfUpvoters[i], sizeof(int));
+	}
+	size_t sizeOfDownvoters = comment.indexesOfDownvoters.getSize();
+	ofs.write((const char*)&sizeOfDownvoters, sizeof(size_t));
+	for (size_t i = 0; i < sizeOfDownvoters; i++)
+	{
+	ofs.write((const char*)&comment.indexesOfDownvoters[i], sizeof(int));
+	}
 	int repliesSize = comment.replies.getSize();
 	ofs.write((const char*)&repliesSize, sizeof(repliesSize));
 	for (size_t i = 0; i < comment.replies.getSize(); i++)
@@ -132,6 +160,7 @@ void SocialNetwork::writeTopicToFile(std::ofstream& ofs, const Topic& topic) {
 	ofs.write((const char*)&topic.indexOfCreator, sizeof(topic.indexOfCreator));
 	writeStringToFile(ofs, topic.description.c_str());
 	ofs.write((const char*)&topic.id, sizeof(topic.id));
+	ofs.write((const char*)&topic.postsCounter, sizeof(topic.postsCounter));
 	int postsSize = topic.posts.getSize();
 	ofs.write((const char*)&postsSize, sizeof(postsSize));
 	for (size_t i = 0; i < topic.posts.getSize(); i++)
@@ -145,5 +174,4 @@ void SocialNetwork::writeUserToFile(std::ofstream& ofs, const User& user) {
 	writeStringToFile(ofs, user.password.c_str());
 	ofs.write((const char*)&user.id, sizeof(user.id));
 	ofs.write((const char*)&user.points, sizeof(user.points));
-	ofs.write((const char*)&user.voted, sizeof(user.voted));
 }

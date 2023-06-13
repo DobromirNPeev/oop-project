@@ -1,5 +1,5 @@
 ﻿#include "SocialNetwork.h"
-
+#include "binarysearch.hpp"
 
 namespace {
 	bool isPrefix(const char* pattern, const char* text)
@@ -27,41 +27,7 @@ namespace {
 		}
 		return false;
 	}
-		template<typename T>
-		int binarySearchInVector(const Vector<T>& arr, int el)
-		{
-			int left = 0, right = arr.getSize() - 1;
-
-			while (left <= right)
-			{
-				unsigned mid = left + (right - left) / 2;
-				if (arr[mid].getID() == el)
-					return mid;
-				else if (arr[mid].getID() > el)
-					right = mid - 1;
-				else //arr[mid] < el
-					left = mid + 1;
-			}
-			return -1;
-		}
-		template <>
-		int binarySearchInVector(const Vector<int>& arr, int el)
-		{
-			int left = 0, right = arr.getSize() - 1;
-
-			while (left <= right)
-			{
-				unsigned mid = left + (right - left) / 2;
-				if (arr[mid] == el)
-					return mid;
-				else if (arr[mid] > el)
-					right = mid - 1;
-				else //arr[mid] < el
-					left = mid + 1;
-			}
-			return -1;
-		}
-
+		
 }
 void SocialNetwork::signup() {
 	User current;
@@ -165,15 +131,6 @@ void SocialNetwork::open(unsigned id) {
 		std::cout << "Welcome to " << topics[i].heading << std::endl;
 		openedTopic = &topics[i];
 	}
-	//for (size_t i = 0; i < topics.getSize(); i++)
-	//{
-	//	if (topics[i].getID() == id) {
-	//		std::cout << "Welcome to " << topics[i].heading << std::endl;
-	//		openedTopic = &topics[i];
-	//		return;
-	//	}
-	//}
-
 }
 
 void SocialNetwork::post() {
@@ -217,17 +174,6 @@ void SocialNetwork::p_open(unsigned id) {
 		openedPost = &(openedTopic->posts[i]);
 		std::cout << "Q: " << openedTopic->posts[i];
 	}
-	/*int size = openedTopic->getPosts().getSize();
-	for (size_t i = 0; i < size; i++)
-	{
-		if (openedTopic->getPosts()[i].getID() == id) {
-			openedPost = &(openedTopic->posts[i]);
-			std::cout << "Q: " << openedTopic->getPosts()[i];
-			return;
-		}
-	}*/
-
-
 }
 
 void SocialNetwork::comment() {
@@ -266,11 +212,11 @@ void SocialNetwork::reply(unsigned id) {
 	{
 		//Обхожда корените
 		if (openedPost->comments[i].id == id) {
-			saveReply(id, openedPost->comments[i]);
+			saveReply(openedPost->comments[i]);
 			return;
 		}
 		else {
-			if (searchComment(id, openedPost->comments[i]))
+			if (searchComment(id, openedPost->comments[i],&SocialNetwork::saveReply))
 				return;
 		}
 	}
@@ -286,11 +232,11 @@ void SocialNetwork::upvote(unsigned id) {
 	{
 		//Обхожда корените
 		if (openedPost->comments[i].id == id) {
-			upvoteLogic(id, openedPost->comments[i]);
+			upvoteLogic(openedPost->comments[i]);
 			return;
 		}
 		else if (openedPost->comments[i].replies.getSize() > 0) {
-			if (searchCommentAndUpvote(id, openedPost->comments[i]))
+			if (searchComment(id, openedPost->comments[i], &SocialNetwork::upvoteLogic))
 				return;
 		}
 	}
@@ -306,12 +252,12 @@ void SocialNetwork::downvote(unsigned id) {
 	//Обхожда корените
 	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
 	{
-		if (openedPost->comments[i].replies[i].id == id) {
-			downvoteLogic(id, openedPost->comments[i].replies[i]);
+		if (openedPost->comments[i].id == id) {
+			downvoteLogic(openedPost->comments[i]);
 			return;
 		}
 		else if (openedPost->comments[i].replies.getSize() > 0) {
-			if (searchCommentAndDownvote(id, openedPost->comments[i]))
+			if (searchComment(id, openedPost->comments[i], &SocialNetwork::downvoteLogic))
 				return;
 		}
 	}

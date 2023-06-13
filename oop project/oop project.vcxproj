@@ -139,6 +139,7 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="binarysearch.hpp" />
     <ClInclude Include="Comment.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="Post.h" />

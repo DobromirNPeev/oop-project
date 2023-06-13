@@ -1,7 +1,5 @@
 ﻿#include "SocialNetwork.h"
 
-
-
 SocialNetwork::SocialNetwork() {
 	std::ifstream ifs("Data.dat", std::ios::in | std::ios::binary);
 	if (!ifs.is_open()) {

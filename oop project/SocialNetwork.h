@@ -23,13 +23,17 @@ class SocialNetwork
 	bool searchComment(unsigned id, Comment& toSearch);
 	bool searchCommentAndUpvote(unsigned id, Comment& toSearch);
 	bool searchCommentAndDownvote(unsigned id, Comment& toSearch);
-	int findUser();
-	int findTopic(unsigned n);
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
-	bool upvoteLogic(unsigned id,Comment& comment);
-	bool downvoteLogic(unsigned id,Comment& comment);
+	void upvoteLogic(unsigned id,Comment& comment);
+	void downvoteLogic(unsigned id,Comment& comment);
 	void saveReply(unsigned id,Comment& comment);
+	//template<typename T>
+	//int binarySearchInVector(const Vector<T>& arr, int el);
+	//template <>
+	//int binarySearchInVector(const Vector<int>& arr, int el);
+
+
 
 	User* loggedUser=nullptr;
 	Topic* openedTopic=nullptr;

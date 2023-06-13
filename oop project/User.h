@@ -16,6 +16,7 @@ public:
 	User(const MyString& firstName, const MyString& lastnName, const MyString& password,unsigned id,unsigned points,bool voted);
 	const MyString& getFirstName() const;
 	const MyString& getLastName() const;
+	unsigned getID() const;
 	friend std::istream& operator>>(std::istream& is, User& user);
 	friend std::ostream& operator<<(std::ostream& os,const User& user);
 	friend class SocialNetwork;

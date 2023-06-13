@@ -13,6 +13,11 @@ const MyString& User::getLastName() const {
 	return lastName;
 }
 
+unsigned User::getID() const
+{
+	return id;
+}
+
 std::istream& operator>>(std::istream& is,User& user) {
 	std::cout << "Enter First Name:";
 	is >> user.firstName;

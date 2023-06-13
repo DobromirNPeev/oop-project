@@ -1,6 +1,7 @@
 ﻿#include "SocialNetwork.h"
 
 
+
 SocialNetwork::SocialNetwork() {
 	std::ifstream ifs("Data.dat", std::ios::in | std::ios::binary);
 	if (!ifs.is_open()) {
@@ -67,7 +68,6 @@ namespace {
 		return result;
 	}
 }
-
 
 unsigned SocialNetwork::idCount = 0;
 

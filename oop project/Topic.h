@@ -18,7 +18,7 @@ public:
 	Topic(const MyString& heading,const User& creator, const MyString& description,Vector<Post> posts,unsigned id);
 	const char* getHeading();
 	void setCreator(const User& newCreator);
-	unsigned getID();
+	unsigned getID() const;
 	void setID(unsigned id);
 	friend std::istream& operator>>(std::istream& is, Topic& topic);
 	friend std::ostream& operator<<(std::ostream& os,const Topic& topic);

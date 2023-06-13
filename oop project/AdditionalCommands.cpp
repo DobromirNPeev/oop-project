@@ -1,10 +1,13 @@
 ﻿#include "SocialNetwork.h"
 
+
+
 bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
 	//обхожда листата
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
-		if (upvoteLogic(id, toSearch.replies[i])) {
+		if (toSearch.replies[i].id==id) {
+			upvoteLogic(id, toSearch.replies[i]);
 			return true;
 		}
 		else if (toSearch.replies[i].replies.getSize() > 0) {
@@ -19,7 +22,8 @@ bool SocialNetwork::searchCommentAndDownvote(unsigned id, Comment& toSearch) {
 	//Обхожда листата
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
-		if (downvoteLogic(id, toSearch.replies[i])) {
+		if (toSearch.replies[i].id==id) {
+			downvoteLogic(id, toSearch.replies[i]);
 			return true;
 		}
 		else if (toSearch.replies[i].replies.getSize() > 0) {
@@ -50,32 +54,26 @@ int SocialNetwork::containsUser(const MyString& firstName, const MyString& passw
 	return -1;
 }
 
-bool SocialNetwork::upvoteLogic(unsigned id,Comment& comment)
+void SocialNetwork::upvoteLogic(unsigned id,Comment& comment)
 {
 	int searchUpvoted = comment.didUserUpvoted(loggedUser->id);
 	int searchDownvoted = comment.didUserDownvoted(loggedUser->id);
 	if (comment.id == id && searchUpvoted == -1 && searchDownvoted == -1) {
 		comment.IncreaseUpVote();
 		comment.indexesOfUpvoters.pushBack(loggedUser->id);
-		return true;
 	}
 	else if (comment.id == id && searchUpvoted != -1) {
 		comment.DecreaseUpVote();
 		comment.indexesOfUpvoters.popAt(searchUpvoted);
-		return true;
 	}
 	else if (comment.id == id && searchDownvoted != -1) {
 		comment.IncreaseUpVote();
 		comment.DecreaseDownVote();
 		comment.indexesOfUpvoters.pushBack(loggedUser->id);
-		comment.indexesOfDownvoters.popAt(searchDownvoted);
-		return true;
 	}
-
-	return false;
 }
 
-bool SocialNetwork::downvoteLogic(unsigned id, Comment& comment)
+void SocialNetwork::downvoteLogic(unsigned id, Comment& comment)
 {
 	int searchUpvoted = comment.didUserUpvoted(loggedUser->id);
 	int searchDownvoted = comment.didUserDownvoted(loggedUser->id);
@@ -83,43 +81,39 @@ bool SocialNetwork::downvoteLogic(unsigned id, Comment& comment)
 	if (comment.id == id && searchUpvoted == -1 && searchDownvoted == -1) {
 		comment.IncreaseDownVote();
 		comment.indexesOfDownvoters.pushBack(loggedUser->id);
-		return true;
 	}
 	else if (comment.id == id && searchDownvoted != -1) {
 		comment.DecreaseDownVote();
 		comment.indexesOfDownvoters.popAt(searchUpvoted);
-		return true;
 	}
 	else if (comment.id == id && searchUpvoted != -1) {
 		comment.DecreaseUpVote();
 		comment.IncreaseDownVote();
 		comment.indexesOfDownvoters.pushBack(loggedUser->id);
 		comment.indexesOfUpvoters.popAt(searchUpvoted);
-		return true;
 	}
-	return false;
 }
 
 
 
-int SocialNetwork::findUser() {
-	for (size_t i = 0; i < users.getSize(); i++)
-	{
-		if (&users[i] == loggedUser) {
-			return i;
-		}
-	}
-	return -1;
-}
-int SocialNetwork::findTopic(unsigned n) {
-	for (size_t i = 0; i < topics.getSize(); i++)
-	{
-		if (topics[i].id == n) {
-			return i;
-		}
-	}
-	return -1;
-}
+//int SocialNetwork::findUser() {
+//	for (size_t i = 0; i < users.getSize(); i++)
+//	{
+//		if (&users[i] == loggedUser) {
+//			return i;
+//		}
+//	}
+//	return -1;
+//}
+//int SocialNetwork::findTopic(unsigned n) {
+//	for (size_t i = 0; i < topics.getSize(); i++)
+//	{
+//		if (topics[i].id == n) {
+//			return i;
+//		}
+//	}
+//	return -1;
+//}
 
 void SocialNetwork::printReplies(const Comment& comment, MyString& offset) {
 	for (size_t i = 0; i < comment.replies.getSize(); i++)

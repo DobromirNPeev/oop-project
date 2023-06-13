@@ -14,6 +14,10 @@ const char* Topic::getHeading()
 void Topic::setCreator(const User& newCreator) {
 	creator = &newCreator;
 }
+unsigned Topic::getID() const
+{
+	return id;
+}
 std::istream& operator>>(std::istream& is, Topic& topic) {
 	std::cout << "Enter Topic title:";
 	is >> topic.heading;
@@ -28,9 +32,6 @@ std::ostream& operator<<(std::ostream& os,const Topic& topic) {
 	std::cout << ">>Created by:" << *(topic.creator);
 	std::cout << ">>Question asked:" <<topic.getPosts().getSize()<<std::endl;
 	return os;
-}
-unsigned Topic::getID() {
-	return id;
 }
 
 

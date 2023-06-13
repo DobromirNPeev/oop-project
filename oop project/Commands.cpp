@@ -27,6 +27,41 @@ namespace {
 		}
 		return false;
 	}
+		template<typename T>
+		int binarySearchInVector(const Vector<T>& arr, int el)
+		{
+			int left = 0, right = arr.getSize() - 1;
+
+			while (left <= right)
+			{
+				unsigned mid = left + (right - left) / 2;
+				if (arr[mid].getID() == el)
+					return mid;
+				else if (arr[mid].getID() > el)
+					right = mid - 1;
+				else //arr[mid] < el
+					left = mid + 1;
+			}
+			return -1;
+		}
+		template <>
+		int binarySearchInVector(const Vector<int>& arr, int el)
+		{
+			int left = 0, right = arr.getSize() - 1;
+
+			while (left <= right)
+			{
+				unsigned mid = left + (right - left) / 2;
+				if (arr[mid] == el)
+					return mid;
+				else if (arr[mid] > el)
+					right = mid - 1;
+				else //arr[mid] < el
+					left = mid + 1;
+			}
+			return -1;
+		}
+
 }
 void SocialNetwork::signup() {
 	User current;
@@ -96,7 +131,7 @@ void SocialNetwork::create() {
 	std::cin >> newTopic;
 	newTopic.setID(idCount++);
 	newTopic.setCreator(*loggedUser);
-	newTopic.indexOfCreator = findUser();
+	newTopic.indexOfCreator = binarySearchInVector(users,loggedUser->id);
 	topics.pushBack(std::move(newTopic));
 
 }
@@ -118,19 +153,27 @@ void SocialNetwork::open(const MyString& topicName) {
 }
 
 void SocialNetwork::open(unsigned id) {
-	if (loggedUser == nullptr) {
+	if (loggedUser == nullptr || openedTopic!=nullptr) {
 		std::cout << "Cannot acces topic" << std::endl;
 		return;
 	}
-	for (size_t i = 0; i < topics.getSize(); i++)
-	{
-		if (topics[i].getID() == id) {
-			std::cout << "Welcome to " << topics[i].heading << std::endl;
-			openedTopic = &topics[i];
-			return;
-		}
+	int i = binarySearchInVector(topics, id);
+	if (i == -1) {
+		std::cout << "No such topic" << std::endl;
 	}
-	std::cout << "No such topic" << std::endl;
+	else {
+		std::cout << "Welcome to " << topics[i].heading << std::endl;
+		openedTopic = &topics[i];
+	}
+	//for (size_t i = 0; i < topics.getSize(); i++)
+	//{
+	//	if (topics[i].getID() == id) {
+	//		std::cout << "Welcome to " << topics[i].heading << std::endl;
+	//		openedTopic = &topics[i];
+	//		return;
+	//	}
+	//}
+
 }
 
 void SocialNetwork::post() {
@@ -144,7 +187,7 @@ void SocialNetwork::post() {
 	openedTopic->posts.pushBack(std::move(newPost));
 }
 void SocialNetwork::p_open(const MyString& postName) {
-	if (loggedUser == nullptr || openedTopic == nullptr) {
+	if (loggedUser == nullptr || openedTopic == nullptr || openedPost != nullptr ) {
 		std::cout << "Cannot acces post" << std::endl;
 		return;
 	}
@@ -166,7 +209,15 @@ void SocialNetwork::p_open(unsigned id) {
 		std::cout << "Cannot acces post" << std::endl;
 		return;
 	}
-	int size = openedTopic->getPosts().getSize();
+	int i = binarySearchInVector(openedTopic->posts, id);
+	if (i == -1) {
+		std::cout << "No such post" << std::endl;
+	}
+	else {
+		openedPost = &(openedTopic->posts[i]);
+		std::cout << "Q: " << openedTopic->posts[i];
+	}
+	/*int size = openedTopic->getPosts().getSize();
 	for (size_t i = 0; i < size; i++)
 	{
 		if (openedTopic->getPosts()[i].getID() == id) {
@@ -174,8 +225,8 @@ void SocialNetwork::p_open(unsigned id) {
 			std::cout << "Q: " << openedTopic->getPosts()[i];
 			return;
 		}
-	}
-	std::cout << "No such post" << std::endl;
+	}*/
+
 
 }
 
@@ -233,7 +284,9 @@ void SocialNetwork::upvote(unsigned id) {
 	}
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
-		if (upvoteLogic(id, openedPost->comments[i])) {
+		//Обхожда корените
+		if (openedPost->comments[i].id == id) {
+			upvoteLogic(id, openedPost->comments[i]);
 			return;
 		}
 		else if (openedPost->comments[i].replies.getSize() > 0) {
@@ -253,7 +306,8 @@ void SocialNetwork::downvote(unsigned id) {
 	//Обхожда корените
 	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
 	{
-		if (downvoteLogic(id, openedPost->comments[i])) {
+		if (openedPost->comments[i].replies[i].id == id) {
+			downvoteLogic(id, openedPost->comments[i].replies[i]);
 			return;
 		}
 		else if (openedPost->comments[i].replies.getSize() > 0) {
@@ -272,7 +326,7 @@ void SocialNetwork::list() {
 	unsigned numberOfPosts = openedTopic->getPosts().getSize();
 	for (size_t i = 0; i < numberOfPosts; i++)
 	{
-		std::cout << openedTopic->getPosts()[i];
+		std::cout << openedTopic->posts[i];
 	}
 }
 
@@ -305,7 +359,7 @@ void SocialNetwork::whoami() {
 
 void SocialNetwork::about(unsigned id) {
 
-	int topicId = findTopic(id);
+	int topicId = binarySearchInVector(topics,id);
 	if (topicId == -1 || loggedUser == nullptr) {
 		std::cout << "Cannot access or non-existent" << std::endl;
 		return;

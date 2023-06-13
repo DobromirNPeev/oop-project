@@ -27,6 +27,9 @@ class SocialNetwork
 	int findTopic(unsigned n);
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
+	bool upvoteLogic(unsigned id,Comment& comment);
+	bool downvoteLogic(unsigned id,Comment& comment);
+	void saveReply(unsigned id,Comment& comment);
 
 	User* loggedUser=nullptr;
 	Topic* openedTopic=nullptr;

@@ -4,23 +4,7 @@ bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
 	//обхожда листата
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
-		int searchUpvoted = toSearch.replies[i].didUserUpvoted(loggedUser->id);
-		int searchDownvoted = toSearch.replies[i].didUserDownvoted(loggedUser->id);
-		if (toSearch.replies[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
-			toSearch.replies[i].IncreaseUpVote();
-			toSearch.replies[i].indexesOfUpvoters.pushBack(loggedUser->id);
-			return true;
-		}
-		else if (toSearch.replies[i].id == id && searchUpvoted != -1) {
-			toSearch.replies[i].DecreaseUpVote();
-			toSearch.replies[i].indexesOfUpvoters.popAt(searchUpvoted);
-			return true;
-		}
-		else if (toSearch.replies[i].id == id && searchDownvoted != -1) {
-			toSearch.replies[i].IncreaseUpVote();
-			toSearch.replies[i].DecreaseDownVote();
-			toSearch.replies[i].indexesOfUpvoters.pushBack(loggedUser->id);
-			toSearch.replies[i].indexesOfDownvoters.popAt(searchDownvoted);
+		if (upvoteLogic(id, toSearch.replies[i])) {
 			return true;
 		}
 		else if (toSearch.replies[i].replies.getSize() > 0) {
@@ -35,24 +19,7 @@ bool SocialNetwork::searchCommentAndDownvote(unsigned id, Comment& toSearch) {
 	//Обхожда листата
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
-		int searchUpvoted = toSearch.replies[i].didUserUpvoted(loggedUser->id);
-		int searchDownvoted = toSearch.replies[i].didUserDownvoted(loggedUser->id);
-
-		if (toSearch.replies[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
-			toSearch.replies[i].IncreaseDownVote();
-			toSearch.replies[i].indexesOfDownvoters.pushBack(loggedUser->id);
-			return true;
-		}
-		else if (toSearch.replies[i].id == id && searchDownvoted != -1) {
-			toSearch.replies[i].DecreaseDownVote();
-			toSearch.replies[i].indexesOfDownvoters.popAt(searchDownvoted);
-			return true;
-		}
-		else if (toSearch.replies[i].id == id && searchUpvoted != -1) {
-			toSearch.replies[i].DecreaseUpVote();
-			toSearch.replies[i].IncreaseDownVote();
-			toSearch.replies[i].indexesOfDownvoters.pushBack(loggedUser->id);
-			toSearch.replies[i].indexesOfUpvoters.popAt(searchUpvoted);
+		if (downvoteLogic(id, toSearch.replies[i])) {
 			return true;
 		}
 		else if (toSearch.replies[i].replies.getSize() > 0) {
@@ -83,39 +50,57 @@ int SocialNetwork::containsUser(const MyString& firstName, const MyString& passw
 	return -1;
 }
 
-SocialNetwork::~SocialNetwork() {
-	std::ofstream ofs("Data.dat", std::ios::out | std::ios::binary);
-	ofs.write((const char*)&idCount, sizeof(idCount));
-	int userSize = users.getSize();
-	ofs.write((const char*)&userSize, sizeof(userSize));
-	for (size_t i = 0; i < userSize; i++)
-	{
-		writeUserToFile(ofs, users[i]);
+bool SocialNetwork::upvoteLogic(unsigned id,Comment& comment)
+{
+	int searchUpvoted = comment.didUserUpvoted(loggedUser->id);
+	int searchDownvoted = comment.didUserDownvoted(loggedUser->id);
+	if (comment.id == id && searchUpvoted == -1 && searchDownvoted == -1) {
+		comment.IncreaseUpVote();
+		comment.indexesOfUpvoters.pushBack(loggedUser->id);
+		return true;
 	}
-	int topicSize = topics.getSize();
-	ofs.write((const char*)&topicSize, sizeof(topicSize));
-	for (size_t i = 0; i < topics.getSize(); i++)
-	{
-		writeTopicToFile(ofs, topics[i]);
+	else if (comment.id == id && searchUpvoted != -1) {
+		comment.DecreaseUpVote();
+		comment.indexesOfUpvoters.popAt(searchUpvoted);
+		return true;
 	}
+	else if (comment.id == id && searchDownvoted != -1) {
+		comment.IncreaseUpVote();
+		comment.DecreaseDownVote();
+		comment.indexesOfUpvoters.pushBack(loggedUser->id);
+		comment.indexesOfDownvoters.popAt(searchDownvoted);
+		return true;
+	}
+
+	return false;
 }
 
-SocialNetwork::SocialNetwork() {
-	std::ifstream ifs("Data.dat", std::ios::in | std::ios::binary);
-	ifs.read((char*)&idCount, sizeof(idCount));
-	int usersSize = 0;
-	ifs.read((char*)&usersSize, sizeof(usersSize));
-	for (size_t i = 0; i < usersSize; i++)
-	{
-		users.pushBack(std::move(readUserFromBinaryFile(ifs)));
+bool SocialNetwork::downvoteLogic(unsigned id, Comment& comment)
+{
+	int searchUpvoted = comment.didUserUpvoted(loggedUser->id);
+	int searchDownvoted = comment.didUserDownvoted(loggedUser->id);
+
+	if (comment.id == id && searchUpvoted == -1 && searchDownvoted == -1) {
+		comment.IncreaseDownVote();
+		comment.indexesOfDownvoters.pushBack(loggedUser->id);
+		return true;
 	}
-	int topicsSize = 0;
-	ifs.read((char*)&topicsSize, sizeof(topicsSize));
-	for (size_t i = 0; i < topicsSize; i++)
-	{
-		topics.pushBack(std::move(readTopicFromBinaryFile(ifs)));
+	else if (comment.id == id && searchDownvoted != -1) {
+		comment.DecreaseDownVote();
+		comment.indexesOfDownvoters.popAt(searchUpvoted);
+		return true;
 	}
-};
+	else if (comment.id == id && searchUpvoted != -1) {
+		comment.DecreaseUpVote();
+		comment.IncreaseDownVote();
+		comment.indexesOfDownvoters.pushBack(loggedUser->id);
+		comment.indexesOfUpvoters.popAt(searchUpvoted);
+		return true;
+	}
+	return false;
+}
+
+
 
 int SocialNetwork::findUser() {
 	for (size_t i = 0; i < users.getSize(); i++)
@@ -153,14 +138,7 @@ bool SocialNetwork::searchComment(unsigned id, Comment& toSearch) {
 	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
 	{
 		if (toSearch.replies[i].id == id) {
-			std::cout << "Say somehting: ";
-			Comment answer;
-			std::cin >> answer;
-			answer.creator = loggedUser;
-			answer.id = openedPost->commentsCounter++;
-			toSearch.replies[i].replies.pushBack(answer);
-			std::cout << "Posted" << std::endl;
-			loggedUser->points++;
+			saveReply(id, toSearch.replies[i]);
 			return true;
 		}
 		if (toSearch.replies[i].replies.getSize() > 0) {
@@ -170,3 +148,14 @@ bool SocialNetwork::searchComment(unsigned id, Comment& toSearch) {
 	return false;
 }
 
+
+void SocialNetwork::saveReply(unsigned id, Comment& comment) {
+	std::cout << "Say somehting: ";
+	Comment answer;
+	std::cin >> answer;
+	answer.creator = loggedUser;
+	answer.id = openedPost->commentsCounter++;
+	comment.replies.pushBack(std::move(answer));
+	std::cout << "Posted" << std::endl;
+	loggedUser->points++;
+}

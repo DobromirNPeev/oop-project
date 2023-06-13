@@ -16,6 +16,28 @@ namespace {
 		file.write((const char*)&stringLength, sizeof(int));
 		file.write(str, stringLength);
 	}
+
+	Vector<int> readIntegersFromFile(std::ifstream& ifs) {
+		Vector<int> curr;
+		size_t size = 0;
+		ifs.read((char*)&size, sizeof(size));
+		for (size_t i = 0; i < size; i++)
+		{
+			int number = 0;
+			ifs.read((char*)&number, sizeof(number));
+			curr.pushBack(number);
+		}
+		return curr;
+	}
+
+	void writeIntegersToFile(std::ofstream& ofs,size_t size,const Vector<int>& integers) {
+		ofs.write((const char*)&size, sizeof(size_t));
+		for (size_t i = 0; i < size; i++)
+		{
+			ofs.write((const char*)&integers[i], sizeof(int));
+		}
+	}
+
 }
 
 
@@ -25,7 +47,7 @@ Comment SocialNetwork::readCommentFromBinaryFile(std::ifstream& ifs) {
 	ifs.read((char*)&indexOfCreator, sizeof(indexOfCreator));
 	comment.creator = &users[indexOfCreator];
 	comment.indexOfCreator = indexOfCreator;
-	comment.description = readStringFromFile(ifs);
+	comment.description = std::move(readStringFromFile(ifs));
 	unsigned upVoteCounter;
 	ifs.read((char*)&upVoteCounter, sizeof(unsigned));
 	comment.upvoteCounter = upVoteCounter;
@@ -35,22 +57,8 @@ Comment SocialNetwork::readCommentFromBinaryFile(std::ifstream& ifs) {
 	unsigned commentId;
 	ifs.read((char*)&commentId, sizeof(unsigned));
 	comment.id = commentId;
-	size_t sizeOfUpvoters;
-	ifs.read((char*)&sizeOfUpvoters, sizeof(size_t));
-	for (size_t i = 0; i < sizeOfUpvoters; i++)
-	{
-		int currentInd;
-		ifs.read((char*)&currentInd, sizeof(int));
-		comment.indexesOfUpvoters.pushBack(currentInd);
-	}
-	size_t sizeOfDownvoters;
-	ifs.read((char*)&sizeOfDownvoters, sizeof(size_t));
-	for (size_t i = 0; i < sizeOfDownvoters; i++)
-	{
-		int currentInd;
-		ifs.read((char*)&currentInd, sizeof(int));
-		comment.indexesOfDownvoters.pushBack(currentInd);
-	}
+	comment.indexesOfUpvoters = std::move(readIntegersFromFile(ifs));
+	comment.indexesOfDownvoters = std::move(readIntegersFromFile(ifs));
 	int repliesCount;
 	ifs.read((char*)&repliesCount, sizeof(int));
 	for (size_t i = 0; i < repliesCount; i++)
@@ -62,8 +70,8 @@ Comment SocialNetwork::readCommentFromBinaryFile(std::ifstream& ifs) {
 Post SocialNetwork::readPostFromBinaryFile(std::ifstream& ifs)
 {
 	Post post;
-	post.heading = readStringFromFile(ifs);
-	post.description = readStringFromFile(ifs);
+	post.heading = std::move(readStringFromFile(ifs));
+	post.description = std::move(readStringFromFile(ifs));
 	unsigned commentsCounter;
 	ifs.read((char*)&commentsCounter, sizeof(unsigned));
 	post.commentsCounter = commentsCounter;
@@ -81,12 +89,12 @@ Post SocialNetwork::readPostFromBinaryFile(std::ifstream& ifs)
 Topic SocialNetwork::readTopicFromBinaryFile(std::ifstream& ifs)
 {
 	Topic topic;
-	topic.heading = readStringFromFile(ifs);
+	topic.heading = std::move(readStringFromFile(ifs));
 	size_t indexOfCreator;
 	ifs.read((char*)&indexOfCreator, sizeof(indexOfCreator));
 	topic.creator = &users[indexOfCreator];
 	topic.indexOfCreator = indexOfCreator;
-	topic.description = readStringFromFile(ifs);
+	topic.description =std::move(readStringFromFile(ifs));
 	unsigned topicId;
 	ifs.read((char*)&topicId, sizeof(unsigned));
 	topic.id = topicId;
@@ -105,9 +113,9 @@ Topic SocialNetwork::readTopicFromBinaryFile(std::ifstream& ifs)
 User SocialNetwork::readUserFromBinaryFile(std::ifstream& ifs)
 {
 	User user;
-	user.firstName = readStringFromFile(ifs);
-	user.lastName = readStringFromFile(ifs);
-	user.password = readStringFromFile(ifs);
+	user.firstName = std::move(readStringFromFile(ifs));
+	user.lastName =std::move(readStringFromFile(ifs));
+	user.password =std::move(readStringFromFile(ifs));
 	unsigned id;
 	ifs.read((char*)&id, sizeof(unsigned));
 	user.id = id;
@@ -117,24 +125,16 @@ User SocialNetwork::readUserFromBinaryFile(std::ifstream& ifs)
 	return user;
 }
 
+
+
 void SocialNetwork::writeCommentToFile(std::ofstream& ofs, const Comment& comment) {
 	ofs.write((const char*)&comment.indexOfCreator, sizeof(comment.indexOfCreator));
 	writeStringToFile(ofs, comment.description.c_str());
 	ofs.write((const char*)&comment.upvoteCounter, sizeof(comment.upvoteCounter));
 	ofs.write((const char*)&comment.downvoteCounter, sizeof(comment.downvoteCounter));
 	ofs.write((const char*)&comment.id, sizeof(comment.id));
-	size_t sizeOfUpvoters = comment.indexesOfUpvoters.getSize();
-	ofs.write((const char*)&sizeOfUpvoters, sizeof(size_t));
-	for (size_t i = 0; i < sizeOfUpvoters; i++)
-	{
-	ofs.write((const char*)&comment.indexesOfUpvoters[i], sizeof(int));
-	}
-	size_t sizeOfDownvoters = comment.indexesOfDownvoters.getSize();
-	ofs.write((const char*)&sizeOfDownvoters, sizeof(size_t));
-	for (size_t i = 0; i < sizeOfDownvoters; i++)
-	{
-	ofs.write((const char*)&comment.indexesOfDownvoters[i], sizeof(int));
-	}
+	writeIntegersToFile(ofs, comment.indexesOfUpvoters.getSize(), comment.indexesOfUpvoters);
+	writeIntegersToFile(ofs, comment.indexesOfDownvoters.getSize(), comment.indexesOfDownvoters);
 	int repliesSize = comment.replies.getSize();
 	ofs.write((const char*)&repliesSize, sizeof(repliesSize));
 	for (size_t i = 0; i < comment.replies.getSize(); i++)

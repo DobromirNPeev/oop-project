@@ -36,7 +36,7 @@ void SocialNetwork::signup() {
 		std::cout << "User already exists" << std::endl;
 		return;
 	}
-	users.pushBack(current);
+	users.pushBack(std::move(current));
 }
 
 void SocialNetwork::login() {
@@ -80,8 +80,10 @@ void SocialNetwork::search(const MyString& topicName)
 	for (size_t i = 0; i < topics.getSize(); i++) {
 		if (searchInText(topics[i].getHeading(), topicName.c_str())) {
 			std::cout << "-  " << topics[i].getHeading() << "{id:" << topics[i].id << "}" << std::endl;
+			return;
 		}
 	}
+	std::cout << "No such topic" << std::endl;
 }
 
 void SocialNetwork::create() {
@@ -95,7 +97,7 @@ void SocialNetwork::create() {
 	newTopic.setID(idCount++);
 	newTopic.setCreator(*loggedUser);
 	newTopic.indexOfCreator = findUser();
-	topics.pushBack(newTopic);
+	topics.pushBack(std::move(newTopic));
 
 }
 
@@ -139,7 +141,7 @@ void SocialNetwork::post() {
 	Post newPost;
 	std::cin >> newPost;
 	newPost.id = openedTopic->postsCounter++;
-	openedTopic->posts.pushBack(newPost);
+	openedTopic->posts.pushBack(std::move(newPost));
 }
 void SocialNetwork::p_open(const MyString& postName) {
 	if (loggedUser == nullptr || openedTopic == nullptr) {
@@ -187,7 +189,7 @@ void SocialNetwork::comment() {
 	std::cin >> comment;
 	loggedUser->points++;
 	comment.id = openedPost->commentsCounter++;
-	openedPost->comments.pushBack(comment);
+	openedPost->comments.pushBack(std::move(comment));
 }
 
 void SocialNetwork::comments() {
@@ -211,15 +213,9 @@ void SocialNetwork::reply(unsigned id) {
 
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
+		//Обхожда корените
 		if (openedPost->comments[i].id == id) {
-			std::cout << "Say somehting: ";
-			Comment answer;
-			std::cin >> answer;
-			answer.creator = loggedUser;
-			answer.id = openedPost->commentsCounter++;
-			openedPost->comments[i].replies.pushBack(answer);
-			loggedUser->points++;
-			std::cout << "Posted" << std::endl;
+			saveReply(id, openedPost->comments[i]);
 			return;
 		}
 		else {
@@ -227,7 +223,7 @@ void SocialNetwork::reply(unsigned id) {
 				return;
 		}
 	}
-	std::cout << "No such comment" << std::endl;
+	std::cout << "Non-existent comment" << std::endl;
 }
 
 void SocialNetwork::upvote(unsigned id) {
@@ -235,33 +231,18 @@ void SocialNetwork::upvote(unsigned id) {
 		std::cout << "Cannot upvote" << std::endl;
 		return;
 	}
-	//Обхожда корените
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
-		int searchUpvoted = openedPost->comments[i].didUserUpvoted(loggedUser->id);
-		int searchDownvoted = openedPost->comments[i].didUserDownvoted(loggedUser->id);
-		if (openedPost->comments[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
-			openedPost->comments[i].IncreaseUpVote();
-			openedPost->comments[i].indexesOfUpvoters.pushBack(loggedUser->id);
-			break;
-		}
-		else if (openedPost->comments[i].id == id && searchUpvoted != -1) {
-			openedPost->comments[i].DecreaseUpVote();
-			openedPost->comments[i].indexesOfUpvoters.popAt(searchUpvoted);
-			break;
-		}
-		else if (openedPost->comments[i].id == id && searchDownvoted != -1) {
-			openedPost->comments[i].IncreaseUpVote();
-			openedPost->comments[i].DecreaseDownVote();
-			openedPost->comments[i].indexesOfUpvoters.pushBack(loggedUser->id);
-			openedPost->comments[i].indexesOfDownvoters.popAt(searchDownvoted);
-			break;
+		if (upvoteLogic(id, openedPost->comments[i])) {
+			return;
 		}
 		else if (openedPost->comments[i].replies.getSize() > 0) {
 			if (searchCommentAndUpvote(id, openedPost->comments[i]))
 				return;
 		}
 	}
+	std::cout << "Non-existent comment" << std::endl;
+
 }
 
 void SocialNetwork::downvote(unsigned id) {
@@ -272,24 +253,7 @@ void SocialNetwork::downvote(unsigned id) {
 	//Обхожда корените
 	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
 	{
-		int searchUpvoted = openedPost->comments[i].didUserUpvoted(loggedUser->id);
-		int searchDownvoted = openedPost->comments[i].didUserDownvoted(loggedUser->id);
-
-		if (openedPost->comments[i].id == id && searchUpvoted == -1 && searchDownvoted == -1) {
-			openedPost->comments[i].IncreaseDownVote();
-			openedPost->comments[i].indexesOfDownvoters.pushBack(loggedUser->id);
-			return;
-		}
-		else if (openedPost->comments[i].id == id && searchDownvoted != -1) {
-			openedPost->comments[i].DecreaseDownVote();
-			openedPost->comments[i].indexesOfDownvoters.popAt(searchUpvoted);
-			return;
-		}
-		else if (openedPost->comments[i].id == id && searchUpvoted != -1) {
-			openedPost->comments[i].DecreaseUpVote();
-			openedPost->comments[i].IncreaseDownVote();
-			openedPost->comments[i].indexesOfDownvoters.pushBack(loggedUser->id);
-			openedPost->comments[i].indexesOfUpvoters.popAt(searchUpvoted);
+		if (downvoteLogic(id, openedPost->comments[i])) {
 			return;
 		}
 		else if (openedPost->comments[i].replies.getSize() > 0) {
@@ -297,6 +261,7 @@ void SocialNetwork::downvote(unsigned id) {
 				return;
 		}
 	}
+	std::cout << "Non-existent comment"<<std::endl;
 }
 
 void SocialNetwork::list() {
@@ -322,7 +287,7 @@ void SocialNetwork::p_quit() {
 
 void SocialNetwork::quit() {
 	if (openedTopic == nullptr || loggedUser == nullptr) {
-		std::cout << "Cannot quit,no opened topic" << std::endl;
+		std::cout << "Cannot quit" << std::endl;
 		return;
 	}
 	std::cout << "You just left topic " << openedTopic->heading << std::endl;
@@ -340,9 +305,10 @@ void SocialNetwork::whoami() {
 
 void SocialNetwork::about(unsigned id) {
 
-	if (findTopic(id) == -1 || loggedUser == nullptr) {
+	int topicId = findTopic(id);
+	if (topicId == -1 || loggedUser == nullptr) {
 		std::cout << "Cannot access or non-existent" << std::endl;
 		return;
 	}
-	std::cout << topics[findTopic(id)];
+	std::cout << topics[topicId];
 }

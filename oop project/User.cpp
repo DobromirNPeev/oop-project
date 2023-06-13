@@ -1,7 +1,6 @@
 #include "User.h"
 
 
-User::User() :firstName(""), lastName(""), password(""), id(0), points(0) {};
 User::User(const MyString& firstName, const MyString& lastName, const MyString& password) :
 		firstName(firstName), lastName(lastName), password(password), id(0), points(0)  {};
 User::User(const MyString& firstName, const MyString& lastnName, const MyString& password, unsigned id, unsigned points, bool voted)
@@ -14,9 +13,6 @@ const MyString& User::getLastName() const {
 	return lastName;
 }
 
-const MyString& User::getPassword() const {
-	return password;
-}
 std::istream& operator>>(std::istream& is,User& user) {
 	std::cout << "Enter First Name:";
 	is >> user.firstName;

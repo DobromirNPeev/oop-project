@@ -1,6 +1,49 @@
 ﻿#include "SocialNetwork.h"
 
 
+SocialNetwork::SocialNetwork() {
+	std::ifstream ifs("Data.dat", std::ios::in | std::ios::binary);
+	if (!ifs.is_open()) {
+		throw std::logic_error("Unable to open file");
+	}
+	ifs.read((char*)&idCount, sizeof(idCount));
+	int usersSize = 0;
+	ifs.read((char*)&usersSize, sizeof(usersSize));
+	for (size_t i = 0; i < usersSize; i++)
+	{
+		users.pushBack(std::move(readUserFromBinaryFile(ifs)));
+	}
+	int topicsSize = 0;
+	ifs.read((char*)&topicsSize, sizeof(topicsSize));
+	for (size_t i = 0; i < topicsSize; i++)
+	{
+		topics.pushBack(std::move(readTopicFromBinaryFile(ifs)));
+	}
+	ifs.close();
+};
+
+SocialNetwork::~SocialNetwork() {
+	std::ofstream ofs("Data.dat", std::ios::out | std::ios::binary);
+	if (!ofs.is_open()) {
+		throw std::logic_error("Unable to save");
+	}
+	ofs.write((const char*)&idCount, sizeof(idCount));
+	int userSize = users.getSize();
+	ofs.write((const char*)&userSize, sizeof(userSize));
+	for (size_t i = 0; i < userSize; i++)
+	{
+		writeUserToFile(ofs, users[i]);
+	}
+	int topicSize = topics.getSize();
+	ofs.write((const char*)&topicSize, sizeof(topicSize));
+	for (size_t i = 0; i < topics.getSize(); i++)
+	{
+		writeTopicToFile(ofs, topics[i]);
+	}
+	ofs.close();
+}
+
+
 namespace {
 	unsigned int convertFromChar(char ch)
 	{

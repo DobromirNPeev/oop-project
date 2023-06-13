@@ -1,7 +1,6 @@
 #include "Post.h"
 
 
-Post::Post() : Post("", "") {};
 Post::Post(const MyString& heading, const MyString& description) : heading(heading), description(description) {};
 Post::Post(const MyString& heading, const MyString& description,const Vector<Comment>& comments, unsigned id):
 			heading(heading),description(description),comments(comments),id(id){};
@@ -14,10 +13,13 @@ unsigned Post::getID() const
 {
 	return id;
 }
-Vector<Comment> Post::getComments() 
+
+const Vector<Comment>& Post::getComments() const
 {
 	return comments;
-};
+}
+
+
 std::ostream& operator<<(std::ostream& os, const Post& post) {
 	return os <<"- " << post.heading << " {id:" << post.id << "}" << std::endl;;
 }

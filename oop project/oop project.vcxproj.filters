@@ -48,6 +48,9 @@
     <ClCompile Include="Queue.hpp">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="ConstantsErrorMessagesAndEtc.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyString.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="binarysearch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantsCommands.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

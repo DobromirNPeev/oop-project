@@ -130,6 +130,7 @@
     <ClCompile Include="AdditionalCommands.cpp" />
     <ClCompile Include="Commands.cpp" />
     <ClCompile Include="Comment.cpp" />
+    <ClCompile Include="ConstantsErrorMessagesAndEtc.h" />
     <ClCompile Include="fileOperations.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="oop project.cpp" />
@@ -142,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="binarysearch.hpp" />
     <ClInclude Include="Comment.h" />
+    <ClInclude Include="ConstantsCommands.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="Post.h" />
     <ClInclude Include="SocialNetwork.h" />

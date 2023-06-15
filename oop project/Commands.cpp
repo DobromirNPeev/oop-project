@@ -41,10 +41,6 @@ void SocialNetwork::signup() {
 }
 
 void SocialNetwork::login() {
-	if (loggedUser != nullptr) {
-		std::cout << "Already logged in" << std::endl;
-		return;
-	}
 	MyString name;
 	MyString password;
 	std::cout << "Name: ";
@@ -62,11 +58,6 @@ void SocialNetwork::login() {
 
 void SocialNetwork::logout()
 {
-	if (loggedUser == nullptr) {
-		std::cout << "No logged user" << std::endl;
-		return;
-	}
-
 	std::cout << "Goodbye," << loggedUser->firstName << " " << loggedUser->lastName << std::endl;
 	loggedUser = nullptr;
 	openedTopic = nullptr;
@@ -75,10 +66,6 @@ void SocialNetwork::logout()
 
 void SocialNetwork::search(const MyString& topicName) const
 {
-	if (loggedUser == nullptr) {
-		std::cout << "No logged user" << std::endl;
-		return;
-	}
 	for (size_t i = 0; i < topics.getSize(); i++) {
 		if (searchInText(topics[i].getHeading().c_str(), topicName.c_str())) {
 			std::cout << "-  " << topics[i].getHeading() << "{id:" << topics[i].id << "}" << std::endl;
@@ -89,10 +76,6 @@ void SocialNetwork::search(const MyString& topicName) const
 }
 
 void SocialNetwork::create() {
-	if (loggedUser == nullptr) {
-		std::cout << "No logged user" << std::endl;
-		return;
-	}
 	Topic newTopic;
 	std::cin >> newTopic;
 	newTopic.setID(idCount++);
@@ -103,10 +86,6 @@ void SocialNetwork::create() {
 }
 
 void SocialNetwork::open(const MyString& topicName) {
-	if (loggedUser == nullptr || openedTopic != nullptr) {
-		std::cout << "Cannot acces topic" << std::endl;
-		return;
-	}
 	for (size_t i = 0; i < topics.getSize(); i++)
 	{
 		if (searchInText(topics[i].getHeading().c_str(), topicName.c_str())) {
@@ -119,10 +98,6 @@ void SocialNetwork::open(const MyString& topicName) {
 }
 
 void SocialNetwork::open(unsigned id) {
-	if (loggedUser == nullptr || openedTopic!=nullptr) {
-		std::cout << "Cannot acces topic" << std::endl;
-		return;
-	}
 	int i = binarySearchViaID(topics, id);
 	if (i == -1) {
 		std::cout << "No such topic" << std::endl;
@@ -134,20 +109,12 @@ void SocialNetwork::open(unsigned id) {
 }
 
 void SocialNetwork::post() {
-	if (openedTopic == nullptr || loggedUser == nullptr) {
-		std::cout << "Cannot post" << std::endl;
-		return;
-	}
 	Post newPost;
 	std::cin >> newPost;
 	newPost.id = openedTopic->postsCounter++;
 	openedTopic->posts.pushBack(std::move(newPost));
 }
 void SocialNetwork::p_open(const MyString& postName) {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost != nullptr ) {
-		std::cout << "Cannot acces post" << std::endl;
-		return;
-	}
 	int size = openedTopic->getPosts().getSize();
 	for (size_t i = 0; i < size; i++)
 	{
@@ -162,11 +129,6 @@ void SocialNetwork::p_open(const MyString& postName) {
 
 
 void SocialNetwork::p_open(unsigned id) {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost != nullptr) {
-		std::cout << "Cannot acces post" << std::endl;
-		return;
-	}
-
 	int i = binarySearchViaID(openedTopic->posts, id);
 	if (i == -1) {
 		std::cout << "No such post" << std::endl;
@@ -178,10 +140,6 @@ void SocialNetwork::p_open(unsigned id) {
 }
 
 void SocialNetwork::comment() {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot comment" << std::endl;
-		return;
-	}
 	Comment comment;
 	std::cout << "Say something: ";
 	std::cin >> comment;
@@ -191,10 +149,6 @@ void SocialNetwork::comment() {
 }
 
 void SocialNetwork::comments() const {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot see comments" << std::endl;
-		return;
-	}
 	MyString offset(OFFSET);
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
@@ -204,10 +158,6 @@ void SocialNetwork::comments() const {
 }
 
 void SocialNetwork::reply(unsigned id) {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot reply" << std::endl;
-		return;
-	}
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
 		//Обхожда корените
@@ -224,10 +174,6 @@ void SocialNetwork::reply(unsigned id) {
 }
 
 void SocialNetwork::upvote(unsigned id) {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot upvote" << std::endl;
-		return;
-	}
 	for (size_t i = 0; i < openedPost->comments.getSize(); i++)
 	{
 		//Обхожда корените
@@ -245,10 +191,6 @@ void SocialNetwork::upvote(unsigned id) {
 }
 
 void SocialNetwork::downvote(unsigned id) {
-	if (loggedUser == nullptr || openedTopic == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot upvote" << std::endl;
-		return;
-	}
 	//Обхожда корените
 	for (size_t i = 0; i < openedPost->getComments().getSize(); i++)
 	{
@@ -265,10 +207,6 @@ void SocialNetwork::downvote(unsigned id) {
 }
 
 void SocialNetwork::list() const{
-	if (loggedUser == nullptr || openedTopic == nullptr) {
-		std::cout << "Cannot acces posts" << std::endl;
-		return;
-	}
 	unsigned numberOfPosts = openedTopic->getPosts().getSize();
 	for (size_t i = 0; i < numberOfPosts; i++)
 	{
@@ -277,36 +215,24 @@ void SocialNetwork::list() const{
 }
 
 void SocialNetwork::p_quit() {
-	if (openedTopic == nullptr || loggedUser == nullptr || openedPost == nullptr) {
-		std::cout << "Cannot post quit" << std::endl;
-		return;
-	}
-	std::cout << "You just left " << openedPost->heading << std::endl;
+	std::cout << "You just left post" << openedPost->heading << std::endl;
 	openedPost = nullptr;
 }
 
 void SocialNetwork::quit() {
-	if (openedTopic == nullptr || loggedUser == nullptr) {
-		std::cout << "Cannot quit" << std::endl;
-		return;
-	}
 	std::cout << "You just left topic " << openedTopic->heading << std::endl;
 	openedTopic = nullptr;
 	openedPost = nullptr;
 }
 
 void SocialNetwork::whoami() const{
-	if (loggedUser == nullptr) {
-		std::cout << "No logged user" << std::endl;
-		return;
-	}
 	std::cout << *(loggedUser);
 }
 
 void SocialNetwork::about(unsigned id) const{
 	int topicId = binarySearchViaID(topics,id);
-	if (topicId == -1 || openedTopic==nullptr) {
-		std::cout << "No opened topic" << std::endl;
+	if (topicId == -1) {
+		std::cout << "No such topic" << std::endl;
 		return;
 	}
 	std::cout << topics[topicId];

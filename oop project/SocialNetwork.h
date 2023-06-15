@@ -3,6 +3,8 @@
 #include "Topic.h"
 #include <fstream>
 #include "Vector.hpp"
+#include "ConstantsCommands.h"
+#include "ConstantsErrorMessagesAndEtc.h"
 
 static const char* OFFSET = "   ";
 
@@ -13,11 +15,13 @@ class SocialNetwork
 	Topic readTopicFromBinaryFile(std::ifstream& ifs);
 	Post readPostFromBinaryFile(std::ifstream& ifs);
 	Comment readCommentFromBinaryFile(std::ifstream& ifs);
+	void readSocialNetworkFromBinaryFile();
 
 	void writeUserToFile(std::ofstream& ofs, const User& user);
 	void writeTopicToFile(std::ofstream& ofs, const Topic& topic);
 	void writePostToFile(std::ofstream& ofs, const Post& post);
 	void writeCommentToFile(std::ofstream& ofs, const Comment& comment);
+	void writeSocialNetworkToFile();
 
 	void printReplies(const Comment& comment,const MyString& offset) const;
 	bool containsUser(const User& other) const;
@@ -28,6 +32,8 @@ class SocialNetwork
 	template<typename T>
 	int binarySearchViaID(const Vector<T>& arr, int el) const;
 	bool searchComment(unsigned id, Comment& toSearch,  void (SocialNetwork::*pred)(Comment&));
+	bool checkAcces(const MyString& command) const;
+
 
 
 	User* loggedUser=nullptr;
@@ -63,8 +69,6 @@ class SocialNetwork
 public:
 
 	SocialNetwork();
-	SocialNetwork(const SocialNetwork& other) = delete;
-	SocialNetwork& operator=(const SocialNetwork& other) = delete;
 	~SocialNetwork();
 
 	void run();

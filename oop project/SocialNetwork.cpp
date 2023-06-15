@@ -1,45 +1,12 @@
 ﻿#include "SocialNetwork.h"
 
+
 SocialNetwork::SocialNetwork() {
-	std::ifstream ifs("Data.dat", std::ios::in | std::ios::binary);
-	if (!ifs.is_open()) {
-		throw std::logic_error("Unable to open file");
-	}
-	ifs.read((char*)&idCount, sizeof(idCount));
-	int usersSize = 0;
-	ifs.read((char*)&usersSize, sizeof(usersSize));
-	for (size_t i = 0; i < usersSize; i++)
-	{
-		users.pushBack(std::move(readUserFromBinaryFile(ifs)));
-	}
-	int topicsSize = 0;
-	ifs.read((char*)&topicsSize, sizeof(topicsSize));
-	for (size_t i = 0; i < topicsSize; i++)
-	{
-		topics.pushBack(std::move(readTopicFromBinaryFile(ifs)));
-	}
-	ifs.close();
+	readSocialNetworkFromBinaryFile();
 };
 
 SocialNetwork::~SocialNetwork() {
-	std::ofstream ofs("Data.dat", std::ios::out | std::ios::binary);
-	if (!ofs.is_open()) {
-		throw std::logic_error("Unable to save");
-	}
-	ofs.write((const char*)&idCount, sizeof(idCount));
-	int userSize = users.getSize();
-	ofs.write((const char*)&userSize, sizeof(userSize));
-	for (size_t i = 0; i < userSize; i++)
-	{
-		writeUserToFile(ofs, users[i]);
-	}
-	int topicSize = topics.getSize();
-	ofs.write((const char*)&topicSize, sizeof(topicSize));
-	for (size_t i = 0; i < topics.getSize(); i++)
-	{
-		writeTopicToFile(ofs, topics[i]);
-	}
-	ofs.close();
+	writeSocialNetworkToFile();
 }
 
 
@@ -71,51 +38,53 @@ unsigned SocialNetwork::idCount = 0;
 
 void SocialNetwork::run(){
 	MyString command;
-	std::cout << "Welcome to the Social Network. Here is the list of commands you can use:"<<std::endl;
-	std::cout << "| signup - create an user"<<std::endl;
-	std::cout << "| login - expects a first name and a password and if they are correct the user logs in" << std::endl;
-	std::cout << "| create - you can create your own topic" << std::endl;
-	std::cout << "| search - you enter a keyword and it shows all the topics that have it" << std::endl;
-	std::cout << "| open - you enter an id or keyword and it opens the desired topic" << std::endl;
-	std::cout << "| list - you can see all the posts on the opened topic" << std::endl;
-	std::cout << "| post - you can create a post int the opened topic" << std::endl;
-	std::cout << "| p_open - you enter an id or keyword and it opens the desired post in the opened topic" << std::endl;
-	std::cout << "| comment - you can add a comment to the opened post" << std::endl;
-	std::cout << "| comments - it shows you all the comments under the opened post" << std::endl;
-	std::cout << "| reply - you enter an id of a comment and can reply to it" << std::endl;
-	std::cout << "| upvote - add upvote reaction to a comment" << std::endl;
-	std::cout << "| downvote - add downvote reaction to a comment" << std::endl;
-	std::cout << "| p_quit - exit post reading mode" << std::endl;
-	std::cout << "| quit - exit topic" << std::endl;
-	std::cout << "| whoami - shows info about the user" << std::endl;
-	std::cout << "| about - shows info about a certain topic" << std::endl;
+	std::cout << WELCOME_MESSAGE <<std::endl;
+	std::cout << INSTRUCTION_SIGNUP <<std::endl;
+	std::cout << INSTRUCTION_LOGIN << std::endl;
+	std::cout << INSTRUCTION_CREATE << std::endl;
+	std::cout << INSTRUCTION_SEARCH << std::endl;
+	std::cout << INSTRUCTION_OPEN << std::endl;
+	std::cout << INSTRUCTION_LIST << std::endl;
+	std::cout << INSTRUCTION_POST << std::endl;
+	std::cout << INSTRUCTION_P_OPEN << std::endl;
+	std::cout << INSTRUCTION_COMMENT << std::endl;
+	std::cout << INSTRUCTION_COMMENTS << std::endl;
+	std::cout << INSTRUCTION_REPLY << std::endl;
+	std::cout << INSTRUCTION_UPVOTE << std::endl;
+	std::cout << INSTRUCTION_DOWNVOTE << std::endl;
+	std::cout << INSTRUCTION_P_QUIT << std::endl;
+	std::cout << INSTRUCTION_QUIT << std::endl;
+	std::cout << INSTRUCTION_WHOAMI << std::endl;
+	std::cout << INSTRUCTION_ABOUT << std::endl;
 
 	while (true) {
 		std::cout << ">";
 		std::cin >> command;
 		std::cout << std::endl;
-
-		if (command == "signup") {
+		if (!checkAcces(command))
+			continue;
+		if (command == SIGNUP) {
 			signup();
 		}
-		else if (command == "login") {
+		else if (command == LOGIN) {
 			login();
 		}
-		else if (command == "logout") {
+		else if (command == LOGOUT) {
+
 			logout();
 		}
-		else if (command == "search") {
-			MyString topicName;
-			std::cout << "Enter keyword: ";
+		else if (command == SEARCH) {
+			static MyString topicName;
+			std::cout << ENTER_KEYWORD;
 			std::cin >> topicName;
 			search(topicName);
 		}
-		else if (command == "create") {
+		else if (command == CREATE) {
 			create();
 		}
-		else if (command == "open") {
-			MyString topicName;
-			std::cout << "Enter id or topic name: ";
+		else if (command == OPEN) {
+			static MyString topicName;
+			std::cout << ENTER_ID_OR_NAME;
 			std::cin >> topicName;
 			int id = fromString(topicName.c_str());
 			if (id == -1) {
@@ -126,9 +95,9 @@ void SocialNetwork::run(){
 			}
 
 		}
-		else if (command == "p_open") {
-			MyString topicName;
-			std::cout << "Enter id or post name: ";
+		else if (command == P_OPEN) {
+			static MyString topicName;
+			std::cout << ENTER_ID_OR_NAME;
 			std::cin >> topicName;
 			int id = fromString(topicName.c_str());
 			if (id == -1) {
@@ -138,60 +107,60 @@ void SocialNetwork::run(){
 				p_open(id);
 			}
 		}
-		else if (command == "post") {
+		else if (command == POST) {
 			post();
 		}
-		else if (command == "comment") {
+		else if (command == COMMENT) {
 			comment();
 		}
-		else if (command == "comments") {
+		else if (command == COMMENTS) {
 			comments();
 		}
-		else if (command == "reply")  {
+		else if (command == REPLY)  {
 			unsigned id;
-			std::cout << "Enter comment id: ";
+			std::cout << ENTER_ID;
 			std::cin >> id;
 			std::cin.ignore();
 			reply(id);
 		}
-		else if (command == "upvote") {
+		else if (command == UPVOTE) {
 			unsigned id;
-			std::cout << "Enter comment id: ";
+			std::cout << ENTER_ID;
 			std::cin >> id;
 			std::cin.ignore();
 			upvote(id);
 		}
-		else if (command == "downvote") {
+		else if (command == DOWNVOTE) {
 			unsigned id;
-			std::cout << "Enter comment id: ";
+			std::cout << ENTER_ID;
 			std::cin >> id;
 			std::cin.ignore();
 			downvote(id);
 		}
-		else if (command == "list") {
+		else if (command == LIST) {
 			list();
 		}
-		else if (command == "p_quit") {
+		else if (command == P_QUIT) {
 			p_quit();
 		}
-		else if (command == "quit") {
+		else if (command == QUIT) {
 			quit();
 		}
-		else if (command == "whoami") {
+		else if (command == WHOAMI) {
 			whoami();
 		}
-		else if (command == "about") {
+		else if (command == ABOUT) {
 			unsigned id;
-			std::cout << "Enter id: ";
+			std::cout << ENTER_ID;
 			std::cin >> id;
 			std::cin.ignore();
 			about(id);
 		}
-		else if (command == "exit") {
+		else if (command == EXIT) {
 			break;
 		}
 		else {
-			std::cout << "Invalid command"<<std::endl;
+			std::cout << INVALID_COMMAND<<std::endl;
 		}
 		std::cout << std::endl;
 	}

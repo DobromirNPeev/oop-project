@@ -106,7 +106,7 @@ void Vector<T>::pushBack(T&& element) {
 	if (size + 1 > capacity)
 		resize(size + 1);
 
-	data[size++] = element;
+	data[size++] =std::move(element);
 }
 
 template <typename T>

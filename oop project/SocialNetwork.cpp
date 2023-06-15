@@ -105,7 +105,7 @@ void SocialNetwork::run(){
 			logout();
 		}
 		else if (command == "search") {
-			static MyString topicName;
+			MyString topicName;
 			std::cout << "Enter keyword: ";
 			std::cin >> topicName;
 			search(topicName);
@@ -114,7 +114,7 @@ void SocialNetwork::run(){
 			create();
 		}
 		else if (command == "open") {
-			static MyString topicName;
+			MyString topicName;
 			std::cout << "Enter id or topic name: ";
 			std::cin >> topicName;
 			int id = fromString(topicName.c_str());
@@ -127,7 +127,7 @@ void SocialNetwork::run(){
 
 		}
 		else if (command == "p_open") {
-			static MyString topicName;
+			MyString topicName;
 			std::cout << "Enter id or post name: ";
 			std::cin >> topicName;
 			int id = fromString(topicName.c_str());

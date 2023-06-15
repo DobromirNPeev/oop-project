@@ -48,15 +48,9 @@ Comment SocialNetwork::readCommentFromBinaryFile(std::ifstream& ifs) {
 	comment.creator = &users[indexOfCreator];
 	comment.indexOfCreator = indexOfCreator;
 	comment.description = std::move(readStringFromFile(ifs));
-	unsigned upVoteCounter;
-	ifs.read((char*)&upVoteCounter, sizeof(unsigned));
-	comment.upvoteCounter = upVoteCounter;
-	unsigned downVoteCounter;
-	ifs.read((char*)&downVoteCounter, sizeof(unsigned));
-	comment.downvoteCounter = downVoteCounter;
-	unsigned commentId;
-	ifs.read((char*)&commentId, sizeof(unsigned));
-	comment.id = commentId;
+	ifs.read((char*)&comment.upvoteCounter, sizeof(unsigned));
+	ifs.read((char*)&comment.downvoteCounter, sizeof(unsigned));
+	ifs.read((char*)&comment.id, sizeof(unsigned));
 	comment.indexesOfUpvoters = std::move(readIntegersFromFile(ifs));
 	comment.indexesOfDownvoters = std::move(readIntegersFromFile(ifs));
 	int repliesCount;
@@ -72,12 +66,8 @@ Post SocialNetwork::readPostFromBinaryFile(std::ifstream& ifs)
 	Post post;
 	post.heading = std::move(readStringFromFile(ifs));
 	post.description = std::move(readStringFromFile(ifs));
-	unsigned commentsCounter;
-	ifs.read((char*)&commentsCounter, sizeof(unsigned));
-	post.commentsCounter = commentsCounter;
-	unsigned postId;
-	ifs.read((char*)&postId, sizeof(unsigned));
-	post.id = postId;
+	ifs.read((char*)&post.commentsCounter, sizeof(unsigned));
+	ifs.read((char*)&post.id, sizeof(unsigned));
 	int commentsCount;
 	ifs.read((char*)&commentsCount, sizeof(int));
 	for (size_t i = 0; i < commentsCount; i++)
@@ -95,12 +85,8 @@ Topic SocialNetwork::readTopicFromBinaryFile(std::ifstream& ifs)
 	topic.creator = &users[indexOfCreator];
 	topic.indexOfCreator = indexOfCreator;
 	topic.description =std::move(readStringFromFile(ifs));
-	unsigned topicId;
-	ifs.read((char*)&topicId, sizeof(unsigned));
-	topic.id = topicId;
-	unsigned postsCounter;
-	ifs.read((char*)&postsCounter, sizeof(unsigned));
-	topic.postsCounter = postsCounter;
+	ifs.read((char*)&topic.id, sizeof(unsigned));
+	ifs.read((char*)&topic.postsCounter, sizeof(unsigned));
 	int postsCount;
 	ifs.read((char*)&postsCount, sizeof(postsCount));
 	for (size_t i = 0; i < postsCount; i++)
@@ -116,12 +102,8 @@ User SocialNetwork::readUserFromBinaryFile(std::ifstream& ifs)
 	user.firstName = std::move(readStringFromFile(ifs));
 	user.lastName =std::move(readStringFromFile(ifs));
 	user.password =std::move(readStringFromFile(ifs));
-	unsigned id;
-	ifs.read((char*)&id, sizeof(unsigned));
-	user.id = id;
-	unsigned points;
-	ifs.read((char*)&points, sizeof(unsigned));
-	user.points = points;
+	ifs.read((char*)&user.id, sizeof(unsigned));
+	ifs.read((char*)&user.points, sizeof(unsigned));
 	return user;
 }
 

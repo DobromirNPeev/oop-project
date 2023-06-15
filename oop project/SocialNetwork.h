@@ -19,17 +19,14 @@ class SocialNetwork
 	void writePostToFile(std::ofstream& ofs, const Post& post);
 	void writeCommentToFile(std::ofstream& ofs, const Comment& comment);
 
-	void printReplies(const Comment& comment,const MyString& offset);
-	//bool searchComment(unsigned id, Comment& toSearch);
-	//bool searchCommentAndUpvote(unsigned id, Comment& toSearch);
-	//bool searchCommentAndDownvote(unsigned id, Comment& toSearch);
+	void printReplies(const Comment& comment,const MyString& offset) const;
 	bool containsUser(const User& other) const;
 	int containsUser(const MyString& firstName, const MyString& password) const;
 	void upvoteLogic(Comment& comment);
 	void downvoteLogic(Comment& comment);
 	void saveReply(Comment& comment);
 	template<typename T>
-	int binarySearchInVector(const Vector<T>& arr, int el);
+	int binarySearchViaID(const Vector<T>& arr, int el) const;
 	bool searchComment(unsigned id, Comment& toSearch,  void (SocialNetwork::*pred)(Comment&));
 
 
@@ -40,12 +37,11 @@ class SocialNetwork
 	Vector<Topic> topics;
 	static unsigned idCount;
 
-	friend class Command;
 
 	void signup();
 	void login();
 	void logout();
-	void search(const MyString& topicName);
+	void search(const MyString& topicName) const;
 	void create();
 	void open(const MyString& topicName);
 	void open(unsigned id);
@@ -53,15 +49,15 @@ class SocialNetwork
 	void p_open(const MyString& postName);
 	void p_open(unsigned id);
 	void comment();
-	void comments();
+	void comments() const;
 	void reply(unsigned id);
 	void upvote(unsigned id);
 	void downvote(unsigned id);
-	void list();
+	void list() const;
 	void p_quit();
 	void quit();
-	void whoami();
-	void about(unsigned id);
+	void whoami() const;
+	void about(unsigned id) const;
 
 
 public:

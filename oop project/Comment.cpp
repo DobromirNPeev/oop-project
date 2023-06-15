@@ -1,27 +1,5 @@
 #include "Comment.h"
 
-int Comment::didUserUpvoted(unsigned id) const
-{
-	for (size_t i = 0; i < indexesOfUpvoters.getSize(); i++)
-	{
-		if (indexesOfUpvoters[i] == id) {
-			return i;
-		}
-	}
-	return -1;
-}
-
-int Comment::didUserDownvoted(unsigned id) const
-{
-	for (size_t i = 0; i < indexesOfDownvoters.getSize(); i++)
-	{
-		if (indexesOfDownvoters[i] == id) {
-			return i;
-		}
-	}
-	return -1;
-}
-
 Comment::Comment(const User& creator, const MyString& description) :creator(&creator),description(description), upvoteCounter(0), downvoteCounter(0) {}
 Comment::Comment(const User& creator, const MyString& description, Vector<MyString> replies, unsigned upvoteCounter, unsigned downvoteCounter, unsigned idCount, unsigned id)
 					: creator(&creator),description(description), upvoteCounter(upvoteCounter), downvoteCounter(downvoteCounter), id(id){};

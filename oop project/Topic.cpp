@@ -1,15 +1,14 @@
 #include "Topic.h"
 
 
-Topic::Topic() : heading(""), description(""){};
 Topic::Topic(const MyString& heading, const User& creator, const MyString& description) :heading(heading), creator(&creator), description(description), id(0) {};
 Topic::Topic(const MyString& heading,const User& creator, const MyString& description, Vector<Post> posts, unsigned id)
 	:heading(heading), creator(&creator), description(description), posts(posts), id(id) {};
 
 
-const char* Topic::getHeading()
+const MyString& Topic::getHeading() const
 {
-	return heading.c_str();
+	return heading;
 };
 void Topic::setCreator(const User& newCreator) {
 	creator = &newCreator;

@@ -5,18 +5,18 @@
 
 class Topic
 {
-	MyString heading;
+	MyString heading="";
 	const User* creator=nullptr;
 	size_t indexOfCreator=0;
 	Vector<Post> posts;
-	MyString description;
+	MyString description="";
 	unsigned id=0;
 	unsigned postsCounter=0;
 public:
-	Topic();
+	Topic()=default;
 	Topic(const MyString& heading, const User& creator, const MyString& description);
 	Topic(const MyString& heading,const User& creator, const MyString& description,Vector<Post> posts,unsigned id);
-	const char* getHeading();
+	const MyString& getHeading() const;
 	void setCreator(const User& newCreator);
 	unsigned getID() const;
 	void setID(unsigned id);

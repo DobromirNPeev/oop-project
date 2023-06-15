@@ -1,4 +1,5 @@
 ﻿#include "SocialNetwork.h"
+#include "Queue.hpp"
 
 
 namespace {
@@ -21,50 +22,37 @@ namespace {
 
 }
 bool SocialNetwork::searchComment(unsigned id, Comment& toSearch, void (SocialNetwork::*pred)(Comment&)) {
-	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
-	{
-		if (toSearch.replies[i].id == id) {
-			(this->*pred)(toSearch.replies[i]);
-			return true;
-		}
-		else if (toSearch.replies[i].replies.getSize() > 0) {
-			if (searchComment(id, toSearch.replies[i],pred))
+		MyQueue<Comment*> queue;
+		queue.push(&toSearch);
+
+		while (!queue.isEmpty()) {
+			Comment* current = queue.peek();
+			queue.pop();
+
+			if (current->id == id) {
+				(this->*pred)(*current);
 				return true;
+			}
+
+			for (size_t i = 0; i < current->replies.getSize(); ++i) {
+				queue.push(&(current->replies[i]));
+			}
 		}
-	}
-	return false;
+
+		return false;
+	//for (size_t i = 0; i < toSearch.replies.getSize(); i++)
+	//{
+	//	if (toSearch.replies[i].id == id) {
+	//		(this->*pred)(toSearch.replies[i]);
+	//		return true;
+	//	}
+	//	else if (toSearch.replies[i].replies.getSize() > 0) {
+	//		if (searchComment(id, toSearch.replies[i],pred))
+	//			return true;
+	//	}
+	//}
+	//return false;
 }
-//bool SocialNetwork::searchCommentAndUpvote(unsigned id, Comment& toSearch) {
-//	//обхожда листата
-//	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
-//	{
-//		if (toSearch.replies[i].id==id) {
-//			upvoteLogic(toSearch.replies[i]);
-//			return true;
-//		}
-//		else if (toSearch.replies[i].replies.getSize() > 0) {
-//			if (searchCommentAndUpvote(id, toSearch.replies[i]))
-//				return true;
-//		}
-//	}
-//	return false;
-//
-//}
-//bool SocialNetwork::searchCommentAndDownvote(unsigned id, Comment& toSearch) {
-//	//Обхожда листата
-//	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
-//	{
-//		if (toSearch.replies[i].id==id) {
-//			downvoteLogic(toSearch.replies[i]);
-//			return true;
-//		}
-//		else if (toSearch.replies[i].replies.getSize() > 0) {
-//			if (searchCommentAndDownvote(id, toSearch.replies[i]))
-//				return true;
-//		}
-//	}
-//	return false;
-//}
 
 bool SocialNetwork::containsUser(const User& other) const {
 	for (size_t i = 0; i < users.getSize(); i++)
@@ -128,7 +116,7 @@ void SocialNetwork::downvoteLogic(Comment& comment)
 }
 
 
-void SocialNetwork::printReplies(const Comment& comment,const MyString& offset) {
+void SocialNetwork::printReplies(const Comment& comment,const MyString& offset) const {
 	for (size_t i = 0; i < comment.replies.getSize(); i++)
 	{
 		std::cout << offset << comment.replies[i];
@@ -137,23 +125,6 @@ void SocialNetwork::printReplies(const Comment& comment,const MyString& offset) 
 		}
 	}
 }
-
-
-//bool SocialNetwork::searchComment(unsigned id, Comment& toSearch) {
-//	for (size_t i = 0; i < toSearch.replies.getSize(); i++)
-//	{
-//		if (toSearch.replies[i].id == id) {
-//			saveReply(id, toSearch.replies[i]);
-//			return true;
-//		}
-//		if (toSearch.replies[i].replies.getSize() > 0) {
-//			if (searchComment(id, toSearch.replies[i]))
-//				return true;
-//
-//		}
-//	}
-//	return false;
-//}
 
 
 void SocialNetwork::saveReply(Comment& comment) {

@@ -2,7 +2,7 @@
 #include "SocialNetwork.h"
 
 template<typename T>
-int SocialNetwork::binarySearchInVector(const Vector<T>& arr, int el)
+int SocialNetwork::binarySearchViaID(const Vector<T>& arr, int el) const
 {
 	int left = 0, right = arr.getSize() - 1;
 

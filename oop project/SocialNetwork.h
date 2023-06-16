@@ -6,7 +6,6 @@
 #include "ConstantsCommands.h"
 #include "ConstantsErrorMessagesAndEtc.h"
 
-static const char* OFFSET = "   ";
 
 class SocialNetwork
 {
@@ -33,8 +32,7 @@ class SocialNetwork
 	int binarySearchViaID(const Vector<T>& arr, int el) const;
 	bool searchComment(unsigned id, Comment& toSearch,  void (SocialNetwork::*pred)(Comment&));
 	bool checkAcces(const MyString& command) const;
-
-
+	bool invokeCommand(const MyString& command);
 
 	User* loggedUser=nullptr;
 	Topic* openedTopic=nullptr;

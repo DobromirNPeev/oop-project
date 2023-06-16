@@ -15,3 +15,4 @@ static const char* ERROR_ACCESS_POSTS = "Cannot acces posts" ;
 static const char* ERROR_NO_POSTQUITING = "Cannot post quit" ;
 static const char* ERROR_NO_QUITING = "Cannot quit" ;
 static const char* ERROR_NO_OPENEDTOPIC = "No opened topic" ;
+

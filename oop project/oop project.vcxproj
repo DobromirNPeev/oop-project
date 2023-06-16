@@ -135,7 +135,6 @@
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="oop project.cpp" />
     <ClCompile Include="Post.cpp" />
-    <ClCompile Include="Queue.hpp" />
     <ClCompile Include="SocialNetwork.cpp" />
     <ClCompile Include="Topic.cpp" />
     <ClCompile Include="User.cpp" />

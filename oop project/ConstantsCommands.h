@@ -1,5 +1,8 @@
 #pragma once
 
+
+static const char* OFFSET = "   ";
+
 static const MyString SIGNUP = "signup";
 static const MyString LOGIN = "login";
 static const MyString LOGOUT = "logout";

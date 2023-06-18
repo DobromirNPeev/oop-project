@@ -13,13 +13,17 @@ class Post
 public:
 	Post()=default;
 	Post(const MyString& heading, const MyString& description);
-	Post(const MyString& heading, const MyString& description, const Vector<Comment>& comments,unsigned id);
 	friend std::ostream& operator<<(std::ostream& os, const Post& post);
 	friend std::istream& operator>>(std::istream& is, Post& post);
 	const MyString& getHeading() const;
 	unsigned getID() const;
+	void setID(unsigned id);
+	unsigned getCommentsCounter() const;
+	void increaseCommentsCounter();
 	const Vector<Comment>& getComments() const;
-	friend class SocialNetwork;
+	Vector<Comment>& getComments();
+	friend class FileManager;
+
 };
 std::ostream& operator<<(std::ostream& os, const Post& post);
 std::istream& operator>>(std::istream& is, Post& post);

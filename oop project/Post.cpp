@@ -2,8 +2,6 @@
 
 
 Post::Post(const MyString& heading, const MyString& description) : heading(heading), description(description) {};
-Post::Post(const MyString& heading, const MyString& description,const Vector<Comment>& comments, unsigned id):
-			heading(heading),description(description),comments(comments),id(id){};
 
 const MyString& Post::getHeading() const
 {
@@ -14,7 +12,27 @@ unsigned Post::getID() const
 	return id;
 }
 
+void Post::setID(unsigned id)
+{
+	this->id = id;
+}
+
+unsigned Post::getCommentsCounter() const
+{
+	return commentsCounter;
+}
+
+void Post::increaseCommentsCounter()
+{
+		commentsCounter++;
+}
+
 const Vector<Comment>& Post::getComments() const
+{
+	return comments;
+}
+
+Vector<Comment>& Post::getComments()
 {
 	return comments;
 }

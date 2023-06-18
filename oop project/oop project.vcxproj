@@ -128,10 +128,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AdditionalCommands.cpp" />
-    <ClCompile Include="Commands.cpp" />
+    <ClCompile Include="MainCommandHandler.cpp" />
     <ClCompile Include="Comment.cpp" />
-    <ClCompile Include="ConstantsErrorMessagesAndEtc.h" />
-    <ClCompile Include="fileOperations.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="oop project.cpp" />
     <ClCompile Include="Post.cpp" />
@@ -140,9 +139,12 @@
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="binarysearch.hpp" />
+    <ClInclude Include="AdditionalCommands.h" />
+    <ClInclude Include="binarySearchViaID.hpp" />
+    <ClInclude Include="MainCommandHandler.h" />
     <ClInclude Include="Comment.h" />
-    <ClInclude Include="ConstantsCommands.h" />
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="Post.h" />
     <ClInclude Include="SocialNetwork.h" />

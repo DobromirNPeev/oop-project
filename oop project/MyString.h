@@ -1,7 +1,6 @@
 #pragma once
-#pragma once
 #include <iostream>
-#pragma warning (disable:4996)
+#pragma warning(disable:4996)
 
 class MyString
 {
@@ -9,6 +8,7 @@ class MyString
 	size_t _length;
 
 	void copyFrom(const MyString& data);
+	void move(MyString&& other);
 	void free();
 
 	explicit MyString(size_t capacity); //for memory allocation. How much bytes to allocate

@@ -2,34 +2,36 @@
 
 
 Topic::Topic(const MyString& heading, const User& creator, const MyString& description) :heading(heading), creator(&creator), description(description), id(0) {};
-Topic::Topic(const MyString& heading,const User& creator, const MyString& description, Vector<Post> posts, unsigned id)
-	:heading(heading), creator(&creator), description(description), posts(posts), id(id) {};
-
 
 const MyString& Topic::getHeading() const
 {
 	return heading;
 };
 void Topic::setCreator(const User& newCreator) {
-	creator = &newCreator;
+	if(creator==nullptr)
+		creator = &newCreator;
+}
+void Topic::setIndexOfCreator(unsigned ind)
+{
+	indexOfCreator = ind;
 }
 unsigned Topic::getID() const
 {
 	return id;
 }
 std::istream& operator>>(std::istream& is, Topic& topic) {
-	std::cout << "Enter Topic title:";
+	std::cout << ENTER_TITLE;
 	is >> topic.heading;
-	std::cout << "Enter Description:";
+	std::cout << ENTER_DESC;
 	is >> topic.description;
 	return is;
 
 }
 std::ostream& operator<<(std::ostream& os,const Topic& topic) {
-	std::cout << ">>Name:" << topic.heading << std::endl;
-	std::cout << ">>Description:" << topic.description<<std::endl;
-	std::cout << ">>Created by:" << *(topic.creator);
-	std::cout << ">>Question asked:" <<topic.getPosts().getSize()<<std::endl;
+	std::cout << NAME_PRINT << topic.heading << std::endl;
+	std::cout << DESC_PRINT << topic.description<<std::endl;
+	std::cout << CREATOR_PRINT << *(topic.creator);
+	std::cout << NUMOFQUESTIONS_PRINT <<topic.getPosts().getSize()<<std::endl;
 	return os;
 }
 
@@ -39,7 +41,24 @@ void Topic::setID(unsigned id)
 	this->id = id;
 }
 
+
+unsigned Topic::getPostCounter()
+{
+	return postsCounter;
+}
+
+
+void Topic::increasePostsCounter()
+{
+		postsCounter++;
+}
+
 const Vector<Post>& Topic::getPosts() const
+{
+	return posts;
+}
+
+Vector<Post>& Topic::getPosts()
 {
 	return posts;
 }

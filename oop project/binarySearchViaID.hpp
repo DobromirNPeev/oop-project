@@ -1,8 +1,8 @@
 #pragma once
-#include "SocialNetwork.h"
+#include "AdditionalCommands.h"
 
 template<typename T>
-int SocialNetwork::binarySearchViaID(const Vector<T>& arr, int el) const
+int AdditionalCommands::binarySearchViaID(const Vector<T>& arr, int el) const
 {
 	int left = 0, right = arr.getSize() - 1;
 

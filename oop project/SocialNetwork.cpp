@@ -1,11 +1,11 @@
 ﻿#include "SocialNetwork.h"
 
-SocialNetwork::SocialNetwork() {
-	readSocialNetworkFromBinaryFile();
+SocialNetwork::SocialNetwork():commands(*this),files(*this){
+	files.readSocialNetworkFromBinaryFile();
 };
 
 SocialNetwork::~SocialNetwork() {
-	writeSocialNetworkToFile();
+	files.writeSocialNetworkToFile();
 }
 
 
@@ -13,7 +13,9 @@ unsigned SocialNetwork::idCount = 0;
 
 void SocialNetwork::run(){
 	MyString command;
+	std::cout << BORDER_UPPER << std::endl;
 	std::cout << WELCOME_MESSAGE <<std::endl;
+	std::cout << COMMAND_LIST_MESSAGE <<std::endl;
 	std::cout << INSTRUCTION_SIGNUP <<std::endl;
 	std::cout << INSTRUCTION_LOGIN << std::endl;
 	std::cout << INSTRUCTION_CREATE << std::endl;
@@ -31,15 +33,17 @@ void SocialNetwork::run(){
 	std::cout << INSTRUCTION_QUIT << std::endl;
 	std::cout << INSTRUCTION_WHOAMI << std::endl;
 	std::cout << INSTRUCTION_ABOUT << std::endl;
+	std::cout << BORDER_LOWER << std::endl;
+
 
 	while (true) {
 		std::cout << ">";
 		std::cin >> command;
 		std::cout << std::endl;
-		if (!checkAcces(command))
-			continue;
-		if (!invokeCommand(command))
+		if (command == EXIT) {
 			break;
+		}
+		commands.execute(command);
 	}
 
 }

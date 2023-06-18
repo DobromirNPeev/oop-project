@@ -1,7 +1,7 @@
 #pragma once
 #include "User.h"
 #include "Vector.hpp"
-
+#include "Constants.h"
 
 class Comment
 {
@@ -10,8 +10,8 @@ class Comment
 	MyString description="";
 	Vector<Comment> replies;
 
-	Vector<int> indexesOfUpvoters;
-	Vector<int> indexesOfDownvoters;
+	Vector<int> IDsofUpvoters;
+	Vector<int> IDsofDownvoters;
 	
 	unsigned upvoteCounter=0;
 	unsigned downvoteCounter=0;
@@ -19,15 +19,27 @@ class Comment
 public:
 	Comment()=default;
 	Comment(const User& creator,const MyString& description);
-	Comment(const User& creator,const MyString& description,Vector<MyString> replies,unsigned upvoteCounter,unsigned downvoteCounter,unsigned idCount,unsigned id);
 	void IncreaseUpVote();
 	void DecreaseUpVote();
 	void IncreaseDownVote();
 	void DecreaseDownVote();
 	unsigned getID() const;
+	void setID(unsigned id);
+	void setCreator(const User& user);
+	int didUserUpvoted(unsigned id)const;
+	int didUserDownvoted(unsigned id)const;
+	const Vector<Comment>& getReplies() const;
+	Vector<Comment>& getReplies();
+
+	const Vector<int>& getIDsofUpvoters()const;
+	Vector<int>& getIDsofUpvoters();
+
+	const Vector<int>& getIDsofDownvoters()const;
+	Vector<int>& getIDsofDownvoters();
 	friend std::istream& operator>>(std::istream& is, Comment& comment);
 	friend std::ostream& operator<<(std::ostream& os,const Comment& comment);
-	friend class SocialNetwork;
+	friend class FileManager;
+
 };
 std::istream& operator>>(std::istream& is, Comment& comment);
 std::ostream& operator<<(std::ostream& os, const Comment& comment);
